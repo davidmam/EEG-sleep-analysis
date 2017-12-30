@@ -44,7 +44,6 @@ Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 
 
 from __future__ import division
-
 import os
 import sys
 import pickle
@@ -103,7 +102,7 @@ class statesAnalysis(object):
         self.features = features
         
         if self.multi:
-			print("A multi-subject experiment is being analyzed!")
+			print("A multi-subject experiment is being analyzed..")
 			# in case of multi subject analysis, the names of mouse groups
 			# need to be given in the same order as they have been stored
 			# in the dataset
@@ -161,20 +160,6 @@ class statesAnalysis(object):
 		self.sleepStages = ['Wakefulness', 'NREM sleep', 'REM sleep']
 		
 		"""
-		Load initial input data (before pre-processing)
-		"""
-		initialData = 'initData.npz'
-		dataFile = np.load(initialData)
-		initData = dataFile['data']
-		
-		if self.multi:
-			self.dinitial = initData
-		else:
-			self.dinitial = np.log(initData + np.spacing(1))
-		
-		del(initData)
-		
-		"""
 		Back-project data to the log space for visualization
 		"""
 		print("Backprojecting the data to the log space..")
@@ -212,7 +197,7 @@ class statesAnalysis(object):
     
     def backProjectionScaling(self, scaling, d, dMaxRow, dMinRow, dMin, dMax, dMean, dStd):
 		'''
-		Method for scaling back the scaled data.
+		Method for projecting back the scaled data.
 		'''
 		
 		if 'single' in scaling:			
@@ -315,6 +300,7 @@ class statesAnalysis(object):
 		'''
 		Multi-dimensional scaling plot
 		'''
+		
 		if not os.path.isdir('MDSplot'):
 			os.makedirs('MDSplot')
 		
@@ -324,8 +310,14 @@ class statesAnalysis(object):
     
     def groupStatistics(self):
 		'''
-		Method computing the statistics over the under analysis
-		mouse groups
+		Method performing some statistical analysis over the
+		under analysis mouse groups.
+		
+		1: bar plot per latent state displaying the number of epochs
+		   each latent state falls in each subject.
+		2: visualization of the p-values of the 2-sample independent t-test.
+		   This test aims at helping us find the mouse group specific latent
+		   states.
 		'''
 		
 		"""
@@ -342,37 +334,14 @@ class statesAnalysis(object):
 		if not os.path.isdir('ttest'):
 			os.makedirs('ttest')
 		if not os.path.isdir('barPlots'):
-			os.makedirs('barPlots')
-		
+			os.makedirs('barPlots')		
 		
 		"""
 		Find the unique latent-states' IDs
 		"""
 		self.lstatesIDs = np.unique(self.obsKeys[:, 1])
 		self.lstatesPopulation = np.bincount(self.obsKeys[:, 1])
-		
-		"""
-		Remove mouse specific latent-states :
-		"""
-		#dec_remove = []
-		#for unqID in unqlatent[:,0]:
-		#	num_subjects = len(np.unique(FramePattern[FramePattern[:,6]==unqID,4]))
-		#	if num_subjects==1:
-				#print("ID: ",  unqID, "Subs: ", FramePattern[FramePattern[:,6]==unqID,4])
-		#		dec_remove.append(unqID)
-		
-		#-- Remove the found mouse-specific latent-states from our arrays:		
-		#for idx_r in dec_remove:
-			#print idx_r		
-		#	FramePattern = FramePattern[FramePattern[:,6] != idx_r,:]
-		#	latent = latent[latent[:,0] != idx_r,:]		
-		#	unqlatent = unqlatent[unqlatent[:,0] != idx_r,:]
-		
-		#print("FramePattern: ", FramePattern.shape, "latent: ", latent.shape)
-		#print("New unqlatent: ", unqlatent.shape)
 				
-		
-		
 		subjectsIDs = np.unique(self.obsKeys[:, self.obsKeys.shape[1]-2])
 		self.strainIDs = np.unique(self.obsKeys[:, self.obsKeys.shape[1]-1])
 		
@@ -394,7 +363,8 @@ class statesAnalysis(object):
 						self.num_subjs_per_strain[str_ID] = self.num_subjs_per_strain[str_ID]+1
 		
 		"""
-		Compute the per subject distribution: a discrete distribution per subject (number of frames each subject appers in each latent state)
+		Compute the per subject distribution: a discrete distribution per subject 
+		(i.e., number of frames each subject appers in each latent state)
 		"""
 		#--- Create Array : (M_animals * N_lstates)
 		self.subjectsDistr = np.zeros((len(self.subjectsIDs_ordered), len(self.lstatesIDs)), dtype=np.int32)
@@ -433,7 +403,7 @@ class statesAnalysis(object):
 			print("Strain: ", strainID, " of shape: ", strainsDistr_dict[strainID].shape)
 			
 		'''
-		Create a dictionary to save for each latent-state the scores:
+		Create a dictionary to save for each latent-state the t-test scores:
 		'''
 		latentDict = {}
 		latentDict_pvalues = {}
@@ -446,7 +416,7 @@ class statesAnalysis(object):
 		
 		'''
 		Iterate through latent states:
-		to be simplified.....
+		########## TO DO: simplify loop! ##########
 		'''
 		for lstate in self.lstatesIDs:
 			
@@ -490,12 +460,6 @@ class statesAnalysis(object):
 			
 			C_matrix = C_matrix[C_matrix[:, 0].argsort()]
 			
-			#Counts = []
-			#Lb = []
-			#for j in range(C_matrix.shape[0]):
-			#	Counts.append(C_matrix[j,1])
-			#	Lb.append(C_matrix[j,0])
-			
 			#-- Sort subject IDs so that we have the strains in order:
 			Counts = []
 			Lb = []
@@ -512,14 +476,12 @@ class statesAnalysis(object):
 			LatentCounts['l_state_' + str(lstate)]['subjects'] = np.asarray(Lb)
 			
 			"""
-			Statistical tests part: Kolmogorov-Smirnov & Indipendent ttest
-			"""			
+			Statistical test part: Indipendent 2 sample ttest
+			"""
+			
 			'''
 			Create a square array (Number_of_strains * Number_of_strains)
-			'''
-			#ks_statistic = np.zeros((len(self.StrainIDs), len(self.StrainIDs)), dtype=np.float32)
-			#ks_pvalues = np.zeros((len(self.StrainIDs), len(self.StrainIDs)), dtype=np.float32)
-			
+			'''			
 			tt_statistic = np.zeros((len(self.strainIDs), len(self.strainIDs)), dtype=np.float32)
 			tt_pvalues = np.zeros((len(self.strainIDs), len(self.strainIDs)), dtype=np.float32)
 			
@@ -530,16 +492,9 @@ class statesAnalysis(object):
 				for j in range(i+1,len(self.strainIDs)):
 					
 					strain_i = strainsDistr_dict[self.strainIDs[i]]
-					strain_j = strainsDistr_dict[self.strainIDs[j]]					
-				
-					#[statist, p] = ks_2samp(strain_i[:,lstate], strain_j[:,lstate])
-					[tt_statist, tt_p] = ttest_ind(strain_i[:,lstate], strain_j[:,lstate], equal_var = True)
-					#[tt_statist, tt_p] = wilcoxon(strain_i[:,lstate], strain_j[:,lstate])
+					strain_j = strainsDistr_dict[self.strainIDs[j]]
 					
-					#ks_statistic[i,j] = statist
-					#ks_statistic[j,i] = statist
-					#ks_pvalues[i,j] = p
-					#ks_pvalues[j,i] = p
+					[tt_statist, tt_p] = ttest_ind(strain_i[:,lstate], strain_j[:,lstate], equal_var = True)
 					
 					tt_statistic[i,j] = tt_statist
 					tt_statistic[j,i] = tt_statist
@@ -547,14 +502,14 @@ class statesAnalysis(object):
 					tt_pvalues[j,i] = tt_p
 			
 			for i_el in range(tt_pvalues.shape[0]):
-				#ks_pvalues[i_el, i_el] = 1.
 				tt_pvalues[i_el, i_el] = 1.
 			
 			
 			"""
 			Visualization part
-			"""			
-			''' BarPlot over subjects '''
+			"""
+			
+			# Bar plot
 			fig = plt.figure(figsize=(20,15))
 			ax1 = fig.add_subplot(111)
 			#fig.suptitle('Number of epochs associated with this latent state: ' + str(len(latent_frames)) + '\nAwake: ' + str(length_awake*100) + '%, Nrem: ' + str(length_nrem*100) + '%, Rem: ' + str(length_rem*100) + '%', fontsize=30, fontweight='bold')
@@ -575,32 +530,26 @@ class statesAnalysis(object):
 			
 			idx_start = 0
 			idx_end = self.num_subjs_per_strain[self.strainIDs1[0]]
-			#print idx_start, idx_end, ind[idx_start:idx_end], Counts[idx_start:idx_end]
 			strain_bar[0] = ax1.bar(ind[idx_start:idx_end], Counts[idx_start:idx_end]/self.lstatesPopulation[lstate], width, color=colors[0], edgecolor = "none")
 			for i in range(len(self.num_subjs_per_strain)-1):
 				idx_start = idx_start+self.num_subjs_per_strain[self.strainIDs1[i]]
 				idx_end = idx_end+self.num_subjs_per_strain[self.strainIDs1[i+1]]
-				#print i, idx_start, idx_end, ind[idx_start:idx_end], Counts[idx_start:idx_end]		
 				strain_bar[i+1] = ax1.bar(ind[idx_start:idx_end], Counts[idx_start:idx_end]/self.lstatesPopulation[lstate], width, color=colors[i+1], edgecolor = "none")	
 			
 			ax1.set_ylabel('Count', fontweight='bold', fontsize=30)
-			#ax.set_title('Pattern population : '+str(len(f[0,i])), fontsize=10)
-			#ax.set_title('Awake : ' + str(length_awake) + ', Nrem : ' + str(length_nrem) + ', Rem : ' + str(length_rem), fontsize=15, fontweight='bold')
 			ax1.set_xlabel('Subjects', fontweight='bold', fontsize=30)
-			#xTickMarks = ['S%s' %str(j+1) for j in xrange(len(Lb))]
 			xTickMarks = ['s%s' %str(j) for j in Lb]
 			ax1.set_xticks(ind+width/2)
 			xtickNames = ax1.set_xticklabels(xTickMarks, fontweight='bold')
 			ax1.xaxis.set_ticks_position('none')
 			ax1.yaxis.set_ticks_position('none')
-			#ax1.legend((strain_bar[0], strain_bar[1], strain_bar[2], strain_bar[3], strain_bar[4]), ('Strain A', 'Strain B', 'Strain C', 'Strain D', 'Strain E'), bbox_to_anchor=(.95, .9), loc=2, borderaxespad=0.)
-			
+						
 			if len(self.strainIDs)>2:
 				ax1.legend((strain_bar[0], strain_bar[1], strain_bar[3]), self.groupNames, bbox_to_anchor=(.95, .9), loc=2, borderaxespad=0.)
 			else:
 				ax1.legend((strain_bar[0], strain_bar[1]), self.groupNames, bbox_to_anchor=(.95, .9), loc=2, borderaxespad=0.)
 			plt.setp(xtickNames, rotation=45, fontsize=20)
-			#plt.legend(bbox_to_anchor=(1., -1.), loc=2, borderaxespad=0.)
+			
 			ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=15)
 			
 			fname = 'lState_' + str(lstate) + '.png'
@@ -621,7 +570,7 @@ class statesAnalysis(object):
 			#ax4.set_title('Independent two-sample t-test: p-values', fontsize=25, fontweight='bold')
 			
 			
-			#text portion
+			# text portion
 			if len(self.strainIDs)>2:
 				ind_array = np.arange(0., 3., 1.)
 			else:
@@ -634,35 +583,21 @@ class statesAnalysis(object):
 					ax4.text(x_val+0.5, y_val+0.5, c, va='center', ha='center', color='w', fontweight='bold', fontsize=50)
 				else:
 					ax4.text(x_val+0.5, y_val+0.5, c, va='center', ha='center', color='k', fontweight='bold', fontsize=50)
-				#ax4.text(x_val+0.5, y_val+0.5, c, va='center', ha='center', fontweight='bold', fontsize=25)
-			
-			# set the limits of the plot to the limits of the data
-			#plt.axis([0, tt_pvalues.shape[0], 0, tt_pvalues.shape[0]])
-			#plt.gca().invert_yaxis()
 			
 			ax4.set_xticks(np.arange(tt_pvalues.shape[0])+0.5, minor=False)
 			ax4.set_yticks(np.arange(tt_pvalues.shape[1])+0.5, minor=False)
 			
 			# want a more natural, table-like display
 			ax4.invert_yaxis()
-			#ax4.xaxis.tick_bottom()
 			ax4.xaxis.tick_top()
-			
-			#ax4.set_xticklabels(['Strain A', 'Strain B', 'Strain C', 'Strain D'], rotation='vertical', minor=False)
-			
-			#ax4.set_xticklabels(['Strain A', 'Strain B', 'Strain C', 'Strain D', 'Strain E'], minor=False, fontweight='bold', fontsize=35)
-			#ax4.set_yticklabels(['Strain A', 'Strain B', 'Strain C', 'Strain D', 'Strain E'], minor=False, fontweight='bold', fontsize=35)
 			
 			ax4.set_xticklabels(self.groupNames, minor=False, fontweight='bold', fontsize=50)
 			ax4.set_yticklabels(self.groupNames, minor=False, fontweight='bold', fontsize=50)
-			
-			#fig.text(0.2, .03, 'Independent two-sample t-test: p-values', fontsize=50, fontweight='bold')
 			
 			divider4 = make_axes_locatable(ax4)
 			cax4 = divider4.append_axes("right", size="5%", pad=0.1)
 			
 			cb = plt.colorbar(hmat, cax=cax4)
-			#cb.ax.tick_params(labelsize=20)
 			for l in cb.ax.yaxis.get_ticklabels():
 				l.set_weight("bold")
 				l.set_fontsize(40)
@@ -680,10 +615,8 @@ class statesAnalysis(object):
 				data_to_plot.append(strainsDistr_dict[k][:, lstate]/self.lstatesPopulation[lstate])
 		
 			fig = plt.figure(figsize=(15,12))
-			#fig.suptitle('Number of epochs associated with this latent state: ' + str(len(latent_frames)) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM: ' + str(length_nrem*100) + '%, REM: ' + str(length_rem*100) + '%', fontsize=25, fontweight='bold')	
-			#fig.suptitle('Latent State %d \nWakefulness: %s, NREM Sleep: %s, REM Sleep: %s \nTotal number of epochs: %d ' %(i, str(length_awake*100), str(length_nrem*100), str(length_rem*100), str(len(latent_frames))), fontsize=25, fontweight='bold')
 			fig.suptitle('Latent State ' + str(lstate) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM Sleep: ' + str(length_nrem*100) + '%, REM Sleep: ' + str(length_rem*100) + '%' + '\nTotal number of epochs: ' + str(len(latent_frames)), fontsize=25, fontweight='bold')
-			#fig.suptitle('Awake : '+str(length_awake) +', Nrem : ' +str(length_nrem) +', Rem : ' +str(length_rem), fontsize=10)
+			
 			ax = fig.add_subplot(111)
 			ax.grid(False)
 			ax.patch.set_facecolor('0.85')
@@ -697,7 +630,7 @@ class statesAnalysis(object):
 			ax.xaxis.set_ticks_position('none')
 			ax.set_ylabel('Frequency', fontweight='bold', fontsize=25)
 			
-			#bp = plt.boxplot(data_to_plot, notch=True, patch_artist=True)
+			
 			bp = plt.boxplot(data_to_plot, patch_artist=True)
 			
 			plt.setp(bp['boxes'],            # customise box appearance
@@ -709,14 +642,6 @@ class statesAnalysis(object):
 			plt.setp(bp['medians'],          # customize median lines
 					 color='k',#'#1a1a1a',            # line colour
 					 linewidth=5.)             # line thickness
-			
-			#plt.setp(bp['whiskers'], color='#7570b3', linewidth=4)
-			
-			#for box in bp['boxes']:
-				# change outline color
-			#	box.set( color='#7570b3', linewidth=2)
-				# change fill color
-			#	box.set( facecolor = '#1b9e77' )
 			
 						
 			xtickNames = ax.set_xticklabels(self.groupNames)
@@ -732,7 +657,7 @@ class statesAnalysis(object):
     
     def visibleDistributions(self):
 		'''
-		Function for computing & visualizing the input data distributions
+		Method computing & visualizing the input data distributions
 		associated with the observed latent states.
 		'''
 		
@@ -759,12 +684,11 @@ class statesAnalysis(object):
 		"""
 		Iterate through centroids/latent states and infer the visible
 		data distributions
-		"""				
+		"""
+		
 		visibleDistributions = {}
 		backProjectedDistributions = {}
-		initialDataDistributions = {}
-		minCovInit = 1.
-		maxCovInit = -1.
+		
 		minCovVis = 1.
 		maxCovVis = -1.
 		minCovBack = 1.
@@ -776,20 +700,14 @@ class statesAnalysis(object):
 			idx = np.where( self.obsKeys[:, 1]==lstate )[0]
 			
 			d_visible = self.d[idx, :]
-			d_initial = self.dinitial[idx, :]
 			d_back = self.dinit[idx, :]
 			
 			visibleDistributions['lstate%d' %lstate] = {}
-			initialDataDistributions['lstate%d' %lstate] = {}
 			backProjectedDistributions['lstate%d' %lstate] = {}
 			
 			visibleDistributions['lstate%d' %lstate]['mean'] = d_visible.mean(axis=0)
 			visibleDistributions['lstate%d' %lstate]['cov'] = np.cov(d_visible.T)
 			visibleDistributions['lstate%d' %lstate]['data'] = d_visible
-			
-			initialDataDistributions['lstate%d' %lstate]['mean'] = d_initial.mean(axis=0)
-			initialDataDistributions['lstate%d' %lstate]['cov'] = np.cov(d_initial.T)
-			initialDataDistributions['lstate%d' %lstate]['data'] = d_initial
 			
 			backProjectedDistributions['lstate%d' %lstate]['mean'] = d_back.mean(axis=0)
 			backProjectedDistributions['lstate%d' %lstate]['cov'] = np.cov(d_back.T)
@@ -803,12 +721,7 @@ class statesAnalysis(object):
 				minCovBack = np.cov(d_back.T).min()
 			if np.cov(d_back.T).max() > maxCovBack:
 				maxCovBack = np.cov(d_back.T).max()
-			
-			if np.cov(d_initial.T).min() < minCovInit:
-				minCovInit = np.cov(d_initial.T).min()
-			if np.cov(d_initial.T).max() > maxCovInit:
-				maxCovInit = np.cov(d_initial.T).max()
-			
+						
 			if np.cov(d_visible.T).min() < minCovVis:
 				minCovVis = np.cov(d_visible.T).min()
 			if np.cov(d_visible.T).max() > maxCovVis:
@@ -818,28 +731,20 @@ class statesAnalysis(object):
 			Visualize distributions
 			"""
 			self.visualizeDistribution(d_visible, minCovVis, maxCovVis, self.visibleFeatures, './distributions/lState%d/' %lstate, 'visible')
-			self.visualizeDistribution(d_initial, minCovInit, maxCovInit, self.initFeatures, './distributions/lState%d/' %lstate, 'initial')
 			self.visualizeDistribution(d_back, minCovVis, maxCovVis, self.initFeatures, './distributions/lState%d/' %lstate, 'backProjected')
 		
 		savemat('./distributions/visibleDistributions.mat', mdict={'visibleDistributions':visibleDistributions})
-		savemat('./distributions/initialDataDistributions.mat', mdict={'initialDataDistributions':initialDataDistributions})
 		savemat('./distributions/projecteddBackLogDistr.mat', mdict={'projecteddBackLogDistr':backProjectedDistributions})
 		
-		with open ('./distributions/colorsScales.txt', 'w') as f:
-			f.write('minCovInit = %s' %minCovInit)
-			f.write('\nmaxCovInit = %s' %maxCovInit)
-			f.write('\nminCovBackProjected = %s' %minCovBack)
-			f.write('\nmaxCovBackProjected = %s' %maxCovBack)
-			f.write('\nminCovVisible = %s' %minCovVis)
-			f.write('\nmaxCovVisible = %s' %maxCovVis)
     
     # Function for visualizing the distribution of each latent state over
     # the three sleep stages as a colorMat
     def stageDistribution(self):
 		'''
-		Function for computing the distribution of each latent state over
+		Method computing the distribution of each latent state over
 		the three sleep stages & visualizing it as a colorMat.
 		'''
+		
 		nonSingle = self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, :]
 		
 		ids_NonSingle = np.unique(nonSingle[:, 0])		
@@ -853,10 +758,8 @@ class statesAnalysis(object):
 		were manually labeled as Wakefulness, NREM, REM. This can be
 		visualized with an RGB color shade.
 		"""	
+		
 		self.lstateColor, self.lstateCount = self.lstateStageDistribution(self.obsKeys, 1, 3)	
-		# savemat:
-		#savemat('./heatMap/lstateColor.mat', mdict={'lstateColor':self.lstateColor})
-		#savemat('./heatMap/lstateCount.mat', mdict={'lstateCount':self.lstateCount})
 		np.savez_compressed('./heatMap/lstateColor.npz', lstateColor=self.lstateColor, lstateCount=self.lstateCount)
 		
 		#-- Re-order matrix for Visualization:
@@ -886,9 +789,9 @@ class statesAnalysis(object):
     
     def computeTransitions(self):
 		'''
-		Function for computing the transitions from each latent state to
-		the rest.
+		Method computing the transition probabilities array
 		'''
+		
 		if not os.path.isdir('transMatrices'):
 			os.makedirs('transMatrices')
 		
@@ -907,7 +810,7 @@ class statesAnalysis(object):
     
     def transitionsMatrix(self, saveDir):
 		'''
-		Function for computing the transition probabilities from each
+		Method computing the transition probabilities from each
 		latent state to the rest and putting them to a square matrix.
 		'''
 		
@@ -935,7 +838,6 @@ class statesAnalysis(object):
 		
 		transMat = transMat/transMat.sum(axis=1)[:,None]
 		where_are_NaNs = np.isnan(transMat)
-		#print where_are_NaNs
 		transMat[where_are_NaNs] = 0
 		if self.multi:
 			#savemat(saveDir + 'transitionsMat%d.mat' %self.group, mdict={'transitionsMat':transMat})
@@ -981,11 +883,13 @@ class statesAnalysis(object):
     # Function for computing and visualizing entropy & Mutual Information
     def entropyMIcontrol(self):
 		'''
-		Function for computing the entropy and mutual information of the
+		Method computing the entropy and mutual information of the
 		observed latent states.
 		'''
+		
 		if not os.path.isdir('entropy'):
 			os.makedirs('entropy')
+		
 		"""
 		Latent states' PDF: lstatePDF = p(stage | lstate)
 		"""
@@ -1048,9 +952,6 @@ class statesAnalysis(object):
 			f.write("\n Wakefulness entropy = %s" %stagesH[0])
 			f.write("\n NREM entropy = %s" %stagesH[1])
 			f.write("\n REM entropy = %s" %stagesH[2])
-			#f.write("\n The MI/H(wake) = %s" %(MI/stagesH[0]))
-			#f.write("\n The MI/H(nrem) = %s" %(MI/stagesH[1]))
-			#f.write("\n The MI/H(rem) = %s" %(MI/stagesH[2]))
 			f.write("\n The MI/H(wake) = %s" %(MI_stage[0]/stagesH[0]))
 			f.write("\n The MI/H(nrem) = %s" %(MI_stage[1]/stagesH[1]))
 			f.write("\n The MI/H(rem) = %s" %(MI_stage[2]/stagesH[2]))
@@ -1078,15 +979,16 @@ class statesAnalysis(object):
 		MI = 0				
 		""" Iterate through latent states """
 		for i in range(Count.shape[0]):
-			#p_Li = Count[i,:].sum()/Total_sum
 			for j in range(Count.shape[1]):
 				if Count[i,j] != 0.:
+					
 					""" Compute p(lstate, stage) """
 					p_li_sj = Count[i,j]/Total_sum
 					
 					denominator = p_latent[i]*p_stage[j]
 					
-					MI += p_li_sj*np.log2(p_li_sj/denominator)			
+					MI += p_li_sj*np.log2(p_li_sj/denominator)		
+						
 		return MI
     
     def mutualInformation_perStage(self, Count):
@@ -1111,13 +1013,13 @@ class statesAnalysis(object):
 			MI_j = 0
 			""" Iterate through latent states """
 			for i in range(Count.shape[0]):
-				#p_Li = Count[i,:].sum()/Total_sum
 				if Count[i,j] != 0.:
 					""" Compute p(lstate, stage) """
 					p_li_sj = Count[i,j]/Total_sum					
 					denominator = p_latent[i]*p_stage[j]					
 					MI_j += p_li_sj*np.log2(p_li_sj/denominator)
-			MI.append(MI_j)		
+			MI.append(MI_j)
+			
 		return np.asarray(MI)
     
     def variableEntropy(self, latent_PDF):
@@ -1156,7 +1058,7 @@ class statesAnalysis(object):
 		
 		""" p(latent_stage) = sum_over_stage / total_population """	
 		p_stage = Count.sum(axis=0)/Total_sum
-		print("p_stage : ", p_stage)
+		#print("p_stage : ", p_stage)
 		
 		"""
 		Iterate through Stages (which represent our random variable)
@@ -1182,15 +1084,17 @@ class statesAnalysis(object):
     # HeatMap function : Computes the RGB color for each latent state
     def lstateStageDistribution(self, inputMat, columnState, columnStage):
 		'''
-		Method for computing the probability of each latent state to 
+		Method computing the probability of each latent state to 
 		belong to each of the 3 sleep stages.
 		Returns a matrix of discrete probability distributions associated
-		to an RGB color.
+		with an RGB color.
 		'''
+		
 		lstates = np.unique(inputMat[:, columnState])
 		
 		latent_color = []
 		counts = []
+		
 		"""
 		Iterate through latent states
 		"""
@@ -1209,8 +1113,6 @@ class statesAnalysis(object):
 			length_rem = len(np.where(obsKeys[:, columnStage]==3)[0])
 			
 			vec_len = (length_awake/lstatePopulation, length_nrem/lstatePopulation, length_rem/lstatePopulation)
-			#vec_len = [len3, len2, len1]
-			#rgb = np.dstack((len1/len_latent, len2/len_latent, len3/len_latent)).astype(np.unit8)
 			latent_color.append(vec_len)
 			counts.append([length_awake, length_nrem, length_rem])
 		
@@ -1261,9 +1163,9 @@ class statesAnalysis(object):
 			"""
 			Compute the per strain histogram over latent states of interest
 			"""
+			
 			print("Computing the per strain histogram..")
 			
-			#histDiff = {}
 			for strain in self.mouseGroups:
 				
 				print "Strain %d" %strain
@@ -1285,7 +1187,6 @@ class statesAnalysis(object):
 				if self.norm == "L2":
 					print "Normalizing histogram by L2 norm.."
 					self.centroidsHist[:,1] = self.centroidsHist[:,1] / np.linalg.norm(self.centroidsHist[:,1], 2)
-					#histDiff[strain] = self.centroidsHist[:,1]
 				else:
 					print "Normalizing histogram by strain length.."
 					self.centroidsHist[:,1] = self.centroidsHist[:,1] / len(strainFrames)
@@ -1294,9 +1195,6 @@ class statesAnalysis(object):
 				np.savez('./statesHistogram/thresholdedStatesHist%d.npz' %strain, thresholdedStatesHist=self.centroidsHist)
 				
 				self.plotHistogram('./statesHistogram/', 'Group%d' %strain, .9)
-			
-			#self.hdiff = histDiff[6] - histDiff[7]
-			#self.plotHistogramDiff(.9)
 			
 			"""
 			Create the per subject histogram
@@ -1333,7 +1231,6 @@ class statesAnalysis(object):
 				
 				np.savez('./statesHistogram/perSubject/thresholdedStatesHist%d.npz' %subject, thresholdedStatesHist=self.centroidsHist)
 				
-				#self.plotHistogram(subj, np.max(self.centroidsHist[:,1]))
 				self.plotHistogram('./statesHistogram/perSubject/', 'S%d' %subject, 1.)	
     
     # Function for re-ordering a matrix with linkage:
@@ -1466,17 +1363,10 @@ class statesAnalysis(object):
 		
 		# set the limits of the plot to the limits of the data
 		plt.axis([0, HamDist.shape[0], 0, HamDist.shape[0]])
-		#plt.gca().invert_yaxis()
-		
-		#ax.set_xticks(np.arange(HamDist.shape[0])+0.5, minor=False)
-		#ax.set_yticks(np.arange(HamDist.shape[1])+0.5, minor=False)
 		
 		# want a more natural, table-like display
 		ax.invert_yaxis()
 		ax.xaxis.tick_top()
-		
-		#ax.set_xticklabels(labels, rotation='vertical', minor=False, fontweight='bold', fontsize=15)
-		#ax.set_yticklabels(labels, minor=False, fontweight='bold', fontsize=15)
 		
 		plt.tick_params(
 							axis='x',          # changes apply to the x-axis
@@ -1495,12 +1385,8 @@ class statesAnalysis(object):
 		divider4 = make_axes_locatable(ax)
 		cax4 = divider4.append_axes("right", size="5%", pad=0.25)
 		
-		#v = np.linspace(0., 0.5, 15, endpoint=True)
-		
 		cb = plt.colorbar(hmat, cax=cax4) #ticks=v)
-		#cb.set_clim(0., 0.5)
 		
-		#cb = plt.colorbar()
 		for l in cb.ax.yaxis.get_ticklabels():
 				l.set_weight("bold")
 				l.set_fontsize(15)
@@ -1513,25 +1399,15 @@ class statesAnalysis(object):
 		"""
 		labels = ['f%s' %i for i in range(Dissimilarity.shape[0])]
 		f = plt.figure(figsize=(10,10))
-		#plt.pcolor(dpcaCov, cmap='RdYlGn_r')
 		ax = f.add_subplot(111)
-		#plt.pcolor(dCov2, cmap='seismic')
 		hmat = plt.pcolor(euDist, cmap='RdBu_r')
-		#hmat = plt.pcolor(dCov2, cmap='RdBu_r')
 		
 		# set the limits of the plot to the limits of the data
 		plt.axis([0, euDist.shape[0], 0, euDist.shape[0]])
-		#plt.gca().invert_yaxis()
-		
-		#ax.set_xticks(np.arange(HamDist.shape[0])+0.5, minor=False)
-		#ax.set_yticks(np.arange(HamDist.shape[1])+0.5, minor=False)
 		
 		# want a more natural, table-like display
 		ax.invert_yaxis()
 		ax.xaxis.tick_top()
-		
-		#ax.set_xticklabels(labels, rotation='vertical', minor=False, fontweight='bold', fontsize=15)
-		#ax.set_yticklabels(labels, minor=False, fontweight='bold', fontsize=15)
 		
 		plt.tick_params(
 							axis='x',          # changes apply to the x-axis
@@ -1548,14 +1424,10 @@ class statesAnalysis(object):
 						labelleft='on') # labels along the bottom edge are off
 		
 		divider4 = make_axes_locatable(ax)
-		cax4 = divider4.append_axes("right", size="5%", pad=0.25)
-		
-		#v = np.linspace(0., 0.5, 15, endpoint=True)
+		cax4 = divider4.append_axes("right", size="5%", pad=0.25)		
 		
 		cb = plt.colorbar(hmat, cax=cax4) #ticks=v)
-		#cb.set_clim(0., 0.5)
 		
-		#cb = plt.colorbar()
 		for l in cb.ax.yaxis.get_ticklabels():
 				l.set_weight("bold")
 				l.set_fontsize(15)
@@ -1566,7 +1438,7 @@ class statesAnalysis(object):
     # Function of visualizing the histogram of the latent states
     def statesHistogram(self):
 		'''
-		Function for plotting the histogram of the latent states, i.o.w.
+		Methos plotting the histogram of the latent states, i.o.w.
 		how many samples fall in each unique latent state.
 		'''
 		
@@ -1600,17 +1472,14 @@ class statesAnalysis(object):
 			
 		fig, ax = plt.subplots(figsize=(12,10))
 		plt.style.use('bmh')
-		#heatmap = ax.pcolor(matrixToDisplay, cmap='RdYlGn_r')
 		heatmap = ax.pcolor(matrixToDisplay, cmap='RdBu_r')
-		#heatmap = ax.pcolor(matrixToDisplay, cmap='Reds')
-		#heatmap = ax.pcolor(matrixToDisplay)
 		
 		plt.axis([0, matrixToDisplay.shape[1], 0, matrixToDisplay.shape[0]])
 		
 		# put the major ticks at the middle of each cell
 		ax.set_xticks(np.arange(matrixToDisplay.shape[1])+0.5, minor=False)
 		ax.set_yticks(np.linspace(0, matrixToDisplay.shape[0], num=10, dtype=np.int32), minor=False)
-		#plt.locator_params(axis='y', nbins=11)#to specify number of ticks on both or any single axes
+		
 		plt.tick_params(
 						axis='x',          # changes apply to the x-axis
 						which='both',      # both major and minor ticks are affected
@@ -1625,31 +1494,25 @@ class statesAnalysis(object):
 						right='off',         # ticks along the top edge are off
 						labelleft='on') # labels along the bottom edge are off
 		
-		# want a more natural, table-like display
-		#ax.invert_yaxis()
-		#ax.xaxis.tick_top()
 		
-		#ax.set_yticklabels(row_labels, minor=False)
 		ax.set_xticklabels(column_labels, minor=False, fontsize=25, fontweight='bold')#, color='w')
 		ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=15)#, color='w')
 		ax.set_ylabel("Latent-States' IDs", fontsize=25, fontweight='bold')#, color='w')
-		#fig.colorbar(heatmap)
+		
 		
 		divider4 = make_axes_locatable(ax)
 		cax4 = divider4.append_axes("right", size="5%", pad=0.2)
 		
 		cb = plt.colorbar(heatmap, cax=cax4)
-		#cb.ax.tick_params(labelsize=20)
 		for l in cb.ax.yaxis.get_ticklabels():
 			l.set_weight("bold")
 			l.set_fontsize(15)
-			#l.set_color('w')
 			
 		fig.savefig(filename + '.png', transparent=True, dpi=100)
     
     def displayTransitionsArray(self, A, filename):
 		'''
-		Function for displaying an array.
+		Method displaying an array.
 		'''
 		
 		f1 = plt.figure()
@@ -1660,11 +1523,8 @@ class statesAnalysis(object):
 		
 		norm = matplotlib.colors.Normalize(vmin=0., vmax=1.)	
 		
-		#plt.imshow(A, interpolation='nearest')
 		hmat = plt.pcolor(A, norm=norm, cmap='RdBu_r')
-		#plt.imshow(PatternProbMat, interpolation='nearest', cmap=plt.cm.Set1_r)
 		plt.colorbar(hmat)
-		#filename = os.path.join(fig_path, filename)
 		
 		plt.xlim(0, A.shape[0])
 		plt.ylim(0, A.shape[1])
@@ -1672,25 +1532,20 @@ class statesAnalysis(object):
     
     def BoxPlotsDouble(self, d_to_plot_1, d_to_plot_2, fig_path, population, i, labels_1, labels_2, length_awake, length_nrem, length_rem, range_1, range_2):
 		'''
-		Function for visualizing the boxplots of the LOG initial EEG/EMG 
+		Method visualizing the boxplots of the LOG initial EEG/EMG 
 		data mapping to eacch latent state.
 		'''
 		
 		plt.style.use('bmh')
-		colors = list(plt.rcParams['axes.prop_cycle'])#plt.rcParams['axes.color_cycle']
+		colors = list(plt.rcParams['axes.prop_cycle'])
 		
-		#fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10,10))
 		fig = plt.figure(figsize=(15, 10)) 
 		gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1]) 
 		ax1 = plt.subplot(gs[0])
 		
-		#fig.suptitle('Latent_state_' + str(i))
-		#fig.suptitle('Latent_state_ ' + str(i) + '\nPopulation : ' + str(population) + '| Awake : ' + str(length_awake) + ', Nrem : ' + str(length_nrem) + ', Rem : ' + str(length_rem), fontsize=10)
-		#fig.suptitle('Number of epochs associated with this latent state: ' + str(population) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM: ' + str(length_nrem*100) + '%, REM: ' + str(length_rem*100) + '%', fontsize=15, fontweight='bold')
-		#fig.suptitle('Latent State %d \nWakefulness: %s, NREM Sleep: %s, REM Sleep: %s \nTotal number of epochs: %d ' %(i, str(length_awake*100), str(length_nrem*100), str(length_rem*100), population), fontsize=20, fontweight='bold')
 		fig.suptitle('Latent State ' + str(i) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM Sleep: ' + str(length_nrem*100) + '%, REM Sleep: ' + str(length_rem*100) + '%' + '\nTotal number of epochs: ' + str(population), fontsize=23, fontweight='bold')
 		bp1 = ax1.boxplot(d_to_plot_1, patch_artist=True)
-		#ax1.set_xlabel('Features')
+		
 		ax1.grid(False)
 		ax1.patch.set_facecolor('0.85')
 		ax1.patch.set_alpha(0.5)
@@ -1731,9 +1586,6 @@ class statesAnalysis(object):
 		
 		xtickNames2 = ax2.set_xticklabels(labels_2)
 		plt.setp(xtickNames2, rotation=0, fontsize=25, fontweight='bold')
-		
-		#plt.setp(bp1['boxes'], linewidth=2)
-		#plt.setp(bp1['whiskers'], linewidth=2)
 				
 		plt.setp(bp1['boxes'],            # customise box appearance
 				 color='#b2182b',         # outline colour
@@ -1746,8 +1598,6 @@ class statesAnalysis(object):
 				 color='#1a1a1a',            # line colour
 				 linewidth=1.5)             # line thickness
 		
-		#plt.setp(bp2['boxes'], linewidth=2)
-		#plt.setp(bp2['whiskers'], linewidth=2)
 		
 		plt.setp(bp2['boxes'],            # customise box appearance
 				 color='#00441b',         # outline colour
@@ -1770,17 +1620,15 @@ class statesAnalysis(object):
 		M.I. / stage_entropy
 		'''
 		
-		#ind = np.arange(len(MI_stage))
 		ind = 1
 		ind2 = np.arange(5)
 		
 		plt.style.use('bmh')
-		colors = list(plt.rcParams['axes.prop_cycle']) #= cycler(color='bgrcmyk')
+		colors = list(plt.rcParams['axes.prop_cycle'])
 		
 		fig = plt.figure(figsize=(35,30), frameon=False)
 		ax1 = fig.add_subplot(111)
 		plt.grid(False)
-		#fig.suptitle('Latent-state %d \nTotal number of epochs: %d \nAwake: %s, NREM: %s, REM: %s' %(lstate, len(currObsKeys), str(epochsW*100), str(epochsNR*100), str(epochsR*100)), fontsize=20, fontweight='bold')
 	
 		ax1.spines['top'].set_visible(False)
 		ax1.spines['right'].set_visible(False)
@@ -1795,18 +1643,13 @@ class statesAnalysis(object):
 		ax1.bar(ind+width, MI_stage[1]/stagesH[1], bar_width, color=colors[8]['color'], edgecolor = "none", label="NREM")
 		ax1.bar(ind+2*width, MI_stage[2]/stagesH[2], bar_width, color=colors[1]['color'], edgecolor = "none", label="REM")
 		ax1.bar(ind+5*width, overAll, bar_width, color='#40e0d0', edgecolor = "none", label="OverAll")
-		#plt.axhline(y=0.5, color='k', linestyle='--')
-		#ax1.plot(x + width/2, y, c='g')
-		
-		#math.ceil(v*100)/100
 		
 		ax1.set_ylabel('M.I. / Stage Entropy', fontweight='bold', fontsize=70)
-		#ax1.set_xlabel('Time', fontweight='bold', fontsize=20)
 		xTickMarks = ['', 'Stages', '', 'All Stages', '']
 		ax1.set_xlim([0, 5])
 		ax1.set_xticks(ind2 + bar_width/2. + width/2.)
 		xtickNames = ax1.set_xticklabels(xTickMarks, fontweight='bold')
-		#plt.setp(xtickNames, rotation=90, fontsize=15)
+		
 		plt.setp(xtickNames, fontsize=70)
 		ax1.xaxis.set_ticks_position('none')
 		ax1.yaxis.set_ticks_position('none')		
@@ -1815,7 +1658,7 @@ class statesAnalysis(object):
 		ax1.yaxis.labelpad = 20
 		ax1.tick_params(direction='out', pad=20)
 		plt.draw()
-		#ax1.set_ylim([0.0, 1.])
+		
 		legend_properties = {'weight':'bold', 'size':60}
 		plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.8, 1.), loc=2)
 					
@@ -1834,7 +1677,7 @@ class statesAnalysis(object):
 		
 		f1 = plt.figure(figsize=(12,10), frameon=False)
 		plt.grid(False)
-		#ax = Subplot(f1, 111)
+		
 		ax = f1.add_subplot(111)
 		ax.spines['top'].set_visible(False)
 		ax.spines['right'].set_visible(False)
@@ -1843,21 +1686,18 @@ class statesAnalysis(object):
 		ax.yaxis.set_ticks_position('none')
 		ax.xaxis.set_ticks_position('none')
 		width = 0.8
-		#ax.set_aspect('equal', 'datalim')
 
 		graph_maximum = entropies.max()
 		graph_minimum = entropies.min()
 		
 		bin_size = .01; min_edge = graph_minimum; max_edge = graph_maximum
-		#bin_size = .01; min_edge = 1; max_edge = 100
+		
 		N = (max_edge-min_edge)/bin_size; Nplus1 = N + 1
 		bin_list = np.linspace(min_edge, max_edge, Nplus1)
-		#bin_list = 200
-			
-		#plt.hist(entropies, bin_list, range=(graph_minimum, graph_maximum), normed=True, edgecolor = 'none', facecolor = colors[1])
+		
 		[n, bins, patches] = plt.hist(entropies, bin_list, range=(graph_minimum, graph_maximum), edgecolor = 'none', facecolor = colors[1]['color'])
 		
-		#ax.set_yticks(np.linspace(0, n.max() + (35-n.max()), num=8, dtype=np.int32), minor=False)
+		
 		ax.set_xticklabels(ax.get_xticks(), fontweight='bold', fontsize=17)
 		ax.xaxis.labelpad = 20
 		ax.yaxis.labelpad = 20
@@ -1866,8 +1706,7 @@ class statesAnalysis(object):
 		plt.xlabel('Entropy', fontsize=25, fontweight='bold')
 		plt.ylabel('Number of Latent States', fontsize=25, fontweight='bold')
 		plt.legend()
-		#plt.legend(loc='upper right',frameon=False)
-		#plt.show()
+		
 		fname = 'entropiesHist.png'
 		fname = os.path.join(saveDir, fname)
 		plt.savefig(fname, transparent=True, dpi=100)
@@ -1888,28 +1727,19 @@ class statesAnalysis(object):
 		ax1.spines['right'].set_visible(False)
 		ax1.spines['bottom'].set_visible(False)
 		ax1.spines['left'].set_visible(False)
-		#ax1.yaxis.set_ticks_position('left')
-		#ax1.xaxis.set_ticks_position('bottom')
-		width = 0.8
 		
-		#colors = ['#b2182b', '#238b45', '#3690c0', '#023858']
-		#ax1.bar(ind, self.centroidsHist[:,1][self.C1], width, color=colors[0], edgecolor = "none")
+		width = 0.8
 		
 		colors = self.lstateColorThresh[self.C2, :]		
 		counts = self.centroidsHist[:, 1][self.C2]		
 		for i in range( len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0]) ):
 			ax1.bar(ind[i], counts[i], width, color=(colors[i, 2], colors[i, 1], colors[i, 0]), edgecolor = "none")
-			#print (colors[i,0], colors[i,1], colors[i,2])
 		
 		if self.norm == "L2":
 			ax1.set_ylabel('L2 Normalized Count', fontweight='bold', fontsize=20)
 		else:
 			ax1.set_ylabel('Normalized Count', fontweight='bold', fontsize=20)
 		ax1.set_xlabel('Latent States', fontweight='bold', fontsize=20)
-		#xTickMarks = ['%s' %str(j) for j in self.mapCentroidToState[:,0]]
-		#ax1.set_xticks(ind+width/2)
-		#xtickNames = ax1.set_xticklabels(xTickMarks, fontweight='bold')
-		#plt.setp(xtickNames, rotation=90, fontsize=10)
 		ax1.xaxis.set_ticks_position('none')
 		ax1.yaxis.set_ticks_position('none')		
 		ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=17)
@@ -1923,13 +1753,6 @@ class statesAnalysis(object):
 		legend_properties = {'weight':'bold'}
 		legend = plt.legend(handles=[red_patch, green_patch, blue_patch], borderaxespad=0., fontsize=17, prop=legend_properties)
 		frame = legend.get_frame().set_alpha(0)
-		#frame.set_facecolor(None)
-
-		
-		#if self.norm == "L2":
-		#	plt.ylim(0, yLim)
-		#else:
-		#	plt.ylim(0, yLim)
 		
 		fname = 'coloredHistogram' + name + '.png'		
 		fname = os.path.join(saveDir, fname)
@@ -1938,27 +1761,15 @@ class statesAnalysis(object):
     
     def visualizeDistribution(self, d, A, B, labels, saveDir, filename):
 		'''
-		Function for visualizing a data distribution as a covariance matrix
+		FMethod visualizing a data distribution as a covariance matrix
 		together with its mean values.
 		'''
 		
-		#dCov = np.corrcoef(d.T)
 		dCov = np.cov(d.T)
 		
 		f = plt.figure(figsize=(10,10))
-		#plt.pcolor(dpcaCov, cmap='RdYlGn_r')
 		ax = f.add_subplot(111)
-		#plt.pcolor(dCov2, cmap='seismic')
 		
-		"""
-		Colors normalization
-		"""
-		#if self.scaleCovarianceFlag:
-		#	print("Normalizing colors..")
-		#	norm = matplotlib.colors.Normalize(vmin=A, vmax=B)
-		#	hmat = plt.pcolor(dCov, norm=norm, cmap='RdBu_r')
-		#else:
-		#	hmat = plt.pcolor(dCov, cmap='RdBu_r')
 		hmat = plt.pcolor(dCov, cmap='RdBu_r')
 		
 		"""
@@ -1975,7 +1786,6 @@ class statesAnalysis(object):
 		ax.invert_yaxis()
 		ax.xaxis.tick_top()
 		
-		#ax.set_xticklabels(labels, rotation='vertical', minor=False, fontweight='bold', fontsize=40)
 		ax.set_xticklabels(labels, minor=False, fontweight='bold', fontsize=20)
 		ax.set_yticklabels(labels, minor=False, fontweight='bold', fontsize=20)
 		
@@ -1995,10 +1805,9 @@ class statesAnalysis(object):
 		divider4 = make_axes_locatable(ax)
 		cax4 = divider4.append_axes("right", size="5%", pad=0.25)
 		
-		#v = np.linspace(0., 0.5, 15, endpoint=True)
-		cb = plt.colorbar(hmat, cax=cax4) #ticks=v)
-		#cb.set_clim(0., 0.5)
-		#cb = plt.colorbar()
+		
+		cb = plt.colorbar(hmat, cax=cax4)
+		
 		for l in cb.ax.yaxis.get_ticklabels():
 			l.set_weight("bold")
 			l.set_fontsize(15)
@@ -2007,7 +1816,6 @@ class statesAnalysis(object):
 		M2 = []
 		for mi in range(len(M)):
 			M2.append(round(M[mi],2))
-		#print M2
 		
 		if self.features=='bands':
 			f.text(0.45, .07, "Mean:", fontweight='bold', fontsize=20)
@@ -2035,7 +1843,7 @@ if __name__ == "__main__":
 	parser.add_argument('-norm', help='Norm to be used for scaling the histogram over latent states: L2 or Count')
 	parser.add_argument('-features', help='Which features used for the experiment: bands, ratios, other')
 	parser.add_argument('-groupNames', help='Specify the names of the mouse groups have been included in analysis, if multi-subject analysis has been performed')
-	#parser.add_argument('-scaleCovarianceFlag', help='True if covariance matrices to be scaled', type=distutils.util.strtobool, default=False)
+	
 	args = parser.parse_args()
 	
 	expFile = 'exp_details'
