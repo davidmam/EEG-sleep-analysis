@@ -22,17 +22,6 @@ OUTPUT : inside the "analysis" folder generated using the "inferStates.py",
 			  (~data samples) fall in each latent state.
 			- HeatMap of the distribution of the observed latent states
 			  over the sleep stages.
-
-
-
-
-
-OUTPUT: a folder named as "analysis" will be created in the experiment
-		folder. Matrix with the latent activation will be in a sub-folder
-		of the training epoch you are analyzing together with a matrix
-		containing the unique binary latent states and a matrix with the
-		data sample (epoch) id with its corresponding unique binary 
-		latent state.
 		
 		
 
