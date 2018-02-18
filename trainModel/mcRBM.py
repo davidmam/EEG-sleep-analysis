@@ -1,6 +1,19 @@
 """
+	THIS CODE IS UNDER THE MIT LICENSE. YOU CAN FIND THE COMPLETE FILE
+					AT THE SOURCE DIRECTORY.
+					
+	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+	
+	@author : vasiliki.katsageorgiou@gmail.com
+	
+	
+						Publication:
 	A Novel Unsupervised Analysis of Electrophysiological
 		Signals Reveals New Sleep Sub-stages in Mice
+		
+
+*****************************************************************************
+
 
 Class implementing the mean-covariance Restricted Boltzmann Machine (mcRBM)
 by Marc'Aurelio Ranzato.
@@ -16,10 +29,6 @@ http://www.cs.toronto.edu/~ranzato/publications/mcRBM/code/mcRBM_04May2010.zip
 
 COPYRIGHT of the original code has been included in the currect directory.
 
-
-@author : kats.vassia@gmail.com
-
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 <vkatsageorgiou@vassia-PC>
 """
 

@@ -1,6 +1,19 @@
 """
+	THIS CODE IS UNDER THE MIT LICENSE. YOU CAN FIND THE COMPLETE FILE
+					AT THE SOURCE DIRECTORY.
+					
+	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+	
+	@author : vasiliki.katsageorgiou@gmail.com
+	
+	
+						Publication:
 	A Novel Unsupervised Analysis of Electrophysiological
 		Signals Reveals New Sleep Sub-stages in Mice
+		
+		
+*****************************************************************************
+
 
 						DESCRIPTION:				
 This script can be used when performing multi-subject analysis
@@ -17,9 +30,6 @@ is used to classify the left out subject as belonging to one of the
 under analysis mouse groups.
 
 
-@author : vasiliki.katsageorgiou@gmail.com
-
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 <vkatsageorgiou@vassia-PC>
 """
 

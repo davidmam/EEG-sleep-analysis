@@ -1,6 +1,19 @@
 """ 
+	THIS CODE IS UNDER THE MIT LICENSE. YOU CAN FIND THE COMPLETE FILE
+					AT THE SOURCE DIRECTORY.
+					
+	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+	
+	@author : vasiliki.katsageorgiou@gmail.com
+	
+	
+						Publication:
 	A Novel Unsupervised Analysis of Electrophysiological
 		Signals Reveals New Sleep Sub-stages in Mice
+		
+		
+*****************************************************************************
+
 		
 Script written for inferring the latent states from a trained mcRBM model.
 
@@ -28,11 +41,7 @@ OUTPUT: a folder named as "analysis" will be created in the experiment
 		data sample (epoch) id with its corresponding unique binary 
 		latent state.
 		
-		
 
-@author : vasiliki.katsageorgiou@gmail.com
-
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 <vkatsageorgiou@vassia-PC>
 """
 

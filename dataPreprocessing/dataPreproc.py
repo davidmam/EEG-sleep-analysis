@@ -1,6 +1,19 @@
 """
+	THIS CODE IS UNDER THE MIT LICENSE. YOU CAN FIND THE COMPLETE FILE
+					AT THE SOURCE DIRECTORY.
+					
+	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+	
+	@author : vasiliki.katsageorgiou@gmail.com
+	
+	
+						Publication:
 	A Novel Unsupervised Analysis of Electrophysiological
 		Signals Reveals New Sleep Sub-stages in Mice
+		
+		
+************************************************************************
+
 
 Class implementing the pre-processing steps for the analysis of
 electrophysiological data.
@@ -9,9 +22,6 @@ In our experiments, data were pre-processed before modeling them with
 the mean-covariance RBM.
 
 
-@author : kats.vassia@gmail.com
-
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 <vkatsageorgiou@vassia-PC>
 """
 

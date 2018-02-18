@@ -1,6 +1,18 @@
 """ 
+	THIS CODE IS UNDER THE MIT LICENSE. YOU CAN FIND THE COMPLETE FILE
+					AT THE SOURCE DIRECTORY.
+					
+	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+	
+	@author : vasiliki.katsageorgiou@gmail.com
+	
+	
+						Publication:
 	A Novel Unsupervised Analysis of Electrophysiological
 		Signals Reveals New Sleep Sub-stages in Mice
+		
+		
+*****************************************************************************
 		
 
 Script written for performing some kind of analysis of the inferred 
@@ -23,11 +35,7 @@ OUTPUT : inside the "analysis" folder generated using the "inferStates.py",
 			- HeatMap of the distribution of the observed latent states
 			  over the sleep stages.
 		
-		
 
-@author : vasiliki.katsageorgiou@gmail.com
-
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 <vkatsageorgiou@vassia-PC>
 """
 
