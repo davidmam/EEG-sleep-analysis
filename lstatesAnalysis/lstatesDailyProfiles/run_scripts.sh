@@ -15,13 +15,17 @@
 #*****************************************************************************
 
 
-#!/bin/bash
-BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
 
-if [ ! -f "${BASE_DIR}done" ] 
-	then
-		echo "starting ${BASE_DIR}"
-		python2 trainModel.py -f "${BASE_DIR}" -gpuId 0
-		#echo "letting gpu 0 cool down" #-- Uncomment in case you want to run multiple experiments
-		#sleep 1800  #-- Uncomment in case you want to run multiple experiments
-fi
+#!/bin/bash
+BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment2/"
+
+# training epochID
+epochID=9999
+
+# degrees of polynomial, i.e. deg = 8 for cd1c57mixed, Zfhx3
+deg=8
+
+# strains: "cd1c57mixed" OR "Zfhx3"
+strains="Zfhx3"
+
+python2 -W ignore lstatesDailyProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}

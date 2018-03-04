@@ -7,10 +7,10 @@ npRandState = 123
 
 [EXP_DETAILS]
 
-dsetDir = /run/media/vkatsageorgiou/data/mouseSleepAnalysis/journalpaper_dsetsAsWebpage/experiment1/
+dsetDir = /home/vkatsageorgiou/mouseSleepAnalysis/experiment1/
 dSetName = Data.npz
 
-expsDir = /run/media/vkatsageorgiou/data/mouseSleepAnalysis/journalpaper_dsetsAsWebpage/experiment1/
+expsDir = /home/vkatsageorgiou/mouseSleepAnalysis/experiment1/
 expID = mcRBManalysis
 
 #########################################################################################################################################

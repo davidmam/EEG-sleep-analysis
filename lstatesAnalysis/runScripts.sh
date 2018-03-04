@@ -23,6 +23,7 @@ BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
 # using the order subjects have been concatenated in the dataset
 groupNames=Zfhx3Sci/+,Zfhx3+/+
 
+# training epochID
 epochID=9999
 
 # latent states smaller than the threshold will be removed for the visualization of the heatMap

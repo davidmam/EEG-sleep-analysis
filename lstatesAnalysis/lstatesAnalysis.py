@@ -21,8 +21,6 @@ Script written for performing some kind of analysis of the inferred
 Run the script from a terminal using the "runScripts.sh" or following the
 instructions given in the "runScripts.sh".
 
-############################# RE-WRITE ##################################
-
 OUTPUT : inside the "analysis" folder generated using the "inferStates.py",
 		 the script generates:
 			- Boxplots of the initial (back-projected) data samples 

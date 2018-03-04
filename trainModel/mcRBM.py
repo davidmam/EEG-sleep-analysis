@@ -133,8 +133,13 @@ class mcRBM:
 		if not os.path.exists(self.saveDir + '/dataDetails/'):
 			os.makedirs(self.saveDir + '/dataDetails/')
 		
-		# load data_dict.mat file:
-		dLoad = np.load(self.dataFilename)
+		# load data file:
+		if self.dataFilename.split('.')[1] == 'npz':
+			dLoad = np.load(self.dataFilename)
+		elif self.dataFilename.split('.') == 'mat':
+			dLoad = loadmat(self.dataFilename)
+		else:
+			print("error! Unrecognized data file")
 		self.d = dLoad['d']
 		self.obsKeys = dLoad['epochsLinked']
 		self.epochTime = dLoad['epochTime']	
