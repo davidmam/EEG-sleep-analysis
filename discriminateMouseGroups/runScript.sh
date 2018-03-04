@@ -16,8 +16,8 @@
 
 
 #!/bin/bash
-refDir='/home/vkatsageorgiou/documents/experiments/mouseSleepTucci/sci/baseline2recovery/analysis/epoch4500/'
+refDir='/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/'
 
 normFlag=0
 
-python2 classificationEsnemble.py -refDir ${refDir} -normFlag ${normFlag}
+python2 -W ignore classificationEsnemble.py -refDir ${refDir} -normFlag ${normFlag}

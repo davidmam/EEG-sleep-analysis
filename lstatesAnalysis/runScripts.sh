@@ -16,7 +16,7 @@
 
 
 #!/bin/bash
-BASE_DIR="/run/media/vkatsageorgiou/data/mouseSleepAnalysis/journalpaper_dsetsAsWebpage/experiment1/mcRBManalysis/"
+BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
 
 # in case of multi-subject analysis,
 # provide the mouse groups names (ex. Mixed,CD1,C57BL/6J  or Zfhx3Sci/+,Zfhx3+/+)
@@ -41,4 +41,4 @@ norm=L2
 # features : "bands" or "ratios" or "other"
 features=ratios
 
-python2 lstatesAnalysis.py -f ${BASE_DIR} -epochID ${epochID} -threshold ${threshold} -multi ${multi} -norm ${norm} -features ${features} -groupNames ${groupNames}
+python2 -W ignore lstatesAnalysis.py -f ${BASE_DIR} -epochID ${epochID} -threshold ${threshold} -multi ${multi} -norm ${norm} -features ${features} -groupNames ${groupNames}

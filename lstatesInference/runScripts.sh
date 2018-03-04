@@ -16,7 +16,7 @@
 
 
 #!/bin/bash
-BASE_DIR="/run/media/vkatsageorgiou/data/mouseSleepAnalysis/journalpaper_dsetsAsWebpage/experiment1/mcRBManalysis/"
+BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
 
 modelName="ws_fac11_cov11_mean10.mat"
 

@@ -87,9 +87,9 @@ class mouseGroupDiscrimination(object):
 		self.subjects = self.countArray[:, self.countArray.shape[1]-2]
 		self.strains = np.unique(self.countArray[:, self.countArray.shape[1]-1])
 		
-		if not os.path.isdir('standardClassifiers'):
-			os.makedirs('standardClassifiers')
-		os.chdir('standardClassifiers')
+		if not os.path.isdir('strainsClassification'):
+			os.makedirs('strainsClassification')
+		os.chdir('strainsClassification')
 		
 		if self.normFlag==1:
 			self.caseNormalizedHistograms()

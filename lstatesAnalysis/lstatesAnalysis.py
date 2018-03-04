@@ -24,16 +24,27 @@ instructions given in the "runScripts.sh".
 ############################# RE-WRITE ##################################
 
 OUTPUT : inside the "analysis" folder generated using the "inferStates.py",
-		 sub-directories 
+		 the script generates:
 			- Boxplots of the initial (back-projected) data samples 
-			  falling in each latent state.
-			- Multi-dimensional scaling plot of the binary latent-states.
-			  It is cool to see how using just the binary latent states 
-			  we can get clusters of the known sleep stages!
+			  falling in each latent state
+			  (i.e. "boxPlotsBackProjectedData" sub-directory).			
 			- Histogram over the observed latent states: how many epochs
-			  (~data samples) fall in each latent state.
-			- HeatMap of the distribution of the observed latent states
-			  over the sleep stages.
+			  (~data samples) fall in each latent state
+			  (i.e. "statesHistogram" sub-directory).
+			- Distributions of the observed latent states as mean values &
+			  covariance of the input and backprojected data
+			  (i.e. "distributions" sub-directory).
+			- Probability distribution of the observed latent states
+			  over the three known sleep stages (wakefulness, NREM, REM)
+			  (i.e. "heatMap" sub-directory).
+			- Entropy and Normalized Mutual Information
+			  (i.e. "entropy" sub-directory).
+			- Transition probabilities matrix among the observed latent
+			  states
+			  (i.e. "transMatrices" sub-directory).
+			- If multi-subject analysis:
+				Various statistics over mouse groups
+				(i.e. "groupStatistics" sub-directory).
 		
 
 <vkatsageorgiou@vassia-PC>
@@ -292,19 +303,7 @@ class statesAnalysis(object):
 			# visualize boxplots per latent state
 			self.BoxPlotsDouble(dPlotEEG, dPlotEMG, './boxPlotsBackProjectedData/', len(idx), i, EEG_labels, 
 										EMG_labels, length_awake, length_nrem, length_rem, EEG_range, EMG_range)
-    
-    def mdsScale(self):
-		'''
-		Multi-dimensional scaling plot
-		'''
-		
-		if not os.path.isdir('MDSplot'):
-			os.makedirs('MDSplot')
-		
-		# MDS plot of the unique latent states :
-		#self.statesInMDS(self.uniqueStates[:, 2:], './mds/')
-		self.statesInMDScolored(self.uniqueStates[:, 2:], './MDSplot/')
-    
+       
     def groupStatistics(self):
 		'''
 		Method performing some statistical analysis over the
@@ -540,14 +539,22 @@ class statesAnalysis(object):
 			xtickNames = ax1.set_xticklabels(xTickMarks, fontweight='bold')
 			ax1.xaxis.set_ticks_position('none')
 			ax1.yaxis.set_ticks_position('none')
+			
+			legend_properties = {'weight':'bold', 'size':25}
 						
 			if len(self.strainIDs)>2:
-				ax1.legend((strain_bar[0], strain_bar[1], strain_bar[3]), self.groupNames, bbox_to_anchor=(.95, .9), loc=2, borderaxespad=0.)
+				ax1.legend((strain_bar[0], strain_bar[1], strain_bar[3]), self.groupNames, bbox_to_anchor=(.9, .9), loc=2, borderaxespad=0., prop=legend_properties)
 			else:
-				ax1.legend((strain_bar[0], strain_bar[1]), self.groupNames, bbox_to_anchor=(.95, .9), loc=2, borderaxespad=0.)
+				ax1.legend((strain_bar[0], strain_bar[1]), self.groupNames, bbox_to_anchor=(.9, .9), loc=2, borderaxespad=0., prop=legend_properties)
 			plt.setp(xtickNames, rotation=45, fontsize=20)
 			
-			ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=15)
+			yint = []
+			locs, l = plt.yticks()
+			for each in locs:
+				yint.append( round(each, 2) )
+			plt.yticks(yint)
+			
+			ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=20)			
 			
 			fname = 'lState_' + str(lstate) + '.png'
 			fname = os.path.join('./barPlots/', fname)
@@ -579,7 +586,7 @@ class statesAnalysis(object):
 				if c==1.0 :
 					ax4.text(x_val+0.5, y_val+0.5, c, va='center', ha='center', color='w', fontweight='bold', fontsize=50)
 				else:
-					ax4.text(x_val+0.5, y_val+0.5, c, va='center', ha='center', color='k', fontweight='bold', fontsize=50)
+					ax4.text(x_val+0.5, y_val+0.5, round(c, 3), va='center', ha='center', color='k', fontweight='bold', fontsize=50)
 			
 			ax4.set_xticks(np.arange(tt_pvalues.shape[0])+0.5, minor=False)
 			ax4.set_yticks(np.arange(tt_pvalues.shape[1])+0.5, minor=False)
@@ -644,7 +651,13 @@ class statesAnalysis(object):
 			xtickNames = ax.set_xticklabels(self.groupNames)
 			plt.setp(xtickNames, fontsize=25, fontweight='bold')
 			
-			ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=15)
+			yint = []
+			locs, l = plt.yticks()
+			for each in locs:
+				yint.append( round(each, 2) )
+			plt.yticks(yint)
+			
+			ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=20)			
 			
 			fname = 'lstate%d.png' %lstate
 			fname = os.path.join('./groupBoxPlots/', fname)
@@ -1241,197 +1254,7 @@ class statesAnalysis(object):
 		return np.asarray(R['ivl']).astype(int)
     
     #-- Visualization Functions
-    # MDS plot:
-    def statesInMDS(self, uniqueActive, saveDir):
-		'''
-		Method for visualizing in a multi-dimensional scaling the unique 
-		binary latent states.
-		Recall that each unique binary latent state is associated with
-		one sleep-stage.
-		
-		It is cool to see how using just the binary latent states we can
-		get clusters of the known sleep stages!
-		'''
-		
-		use('Agg')
-		# Compute the pairwise Hamming distance among the Unique_activations :
-		h_dist = DistanceMetric.get_metric('hamming')
-		
-		Dissimilarity = h_dist.pairwise(uniqueActive)
-		HamDist = Dissimilarity*uniqueActive.shape[1]
-		
-		print "The maximum Hamming-Distance is : ", np.amax(HamDist)
-		#savemat(saveDir + '/UnqHamDist.mat', mdict={'UnqHamDist':HamDist})
-		
-		mds = manifold.MDS(n_components=2, max_iter=5000, eps=1e-9, random_state=self.prng, dissimilarity="precomputed", n_jobs=-1)
-		pos = mds.fit(Dissimilarity).embedding_
-		
-		plt.style.use('bmh')
-		colors = list(plt.rcParams['axes.prop_cycle']) #= cycler(color='bgrcmyk')
-		
-		f1 = plt.figure(figsize=(20,20))
-		f1.suptitle('Unique latents in MDS')
-		plt.scatter(pos[:, 0], pos[:, 1], s=20, c=colors[1]['color'], label='MDS')
-		for i, txt in enumerate(np.arange(pos.shape[0])):
-			plt.annotate(txt, (pos[i, 0], pos[i, 1]))
-		
-		filename = 'statesInMDS.png'
-		filename = os.path.join(saveDir, filename)
-		f1.savefig(filename)
     
-    def statesInMDScolored(self, uniqueActive, saveDir):
-		'''
-		Method for visualizing in a multi-dimensional scaling the unique 
-		binary latent states.
-		Recall that each unique binary latent state is associated with
-		one sleep-stage.
-		
-		It is cool to see how using just the binary latent states we can
-		get clusters of the known sleep stages!
-		'''
-		
-		use('Agg')
-		# Compute the pairwise Hamming distance among the Unique_activations :
-		h_dist = DistanceMetric.get_metric('hamming')
-		
-		Dissimilarity = h_dist.pairwise(uniqueActive)
-		HamDist = Dissimilarity*uniqueActive.shape[1]
-		
-		print "The maximum Hamming-Distance is : ", np.amax(HamDist)
-		savemat(saveDir + '/hammingArray.mat', mdict={'hammingArray':HamDist})
-		
-		mds = manifold.MDS(n_components=2, max_iter=5000, eps=1e-9, random_state=self.prng, dissimilarity="precomputed", n_jobs=-1)
-		pos = mds.fit(Dissimilarity).embedding_
-		
-		""" Euclidean distance between mds points """
-		dist = DistanceMetric.get_metric('euclidean')
-		euDist = dist.pairwise(pos)
-		
-		plt.style.use('bmh')
-		colors = list(plt.rcParams['axes.prop_cycle']) #= cycler(color='bgrcmyk')
-		
-		f1 = plt.figure(figsize=(20,20))
-		f1.suptitle('Unique latent states in MDS')
-		plt.scatter(pos[:, 0], pos[:, 1], s=20, c=colors[1]['color'], label='MDS')
-		for i, txt in enumerate(np.arange(pos.shape[0])):
-			plt.annotate(txt, (pos[i, 0], pos[i, 1]))
-		
-		filename = 'statesInMDS.png'
-		filename = os.path.join(saveDir, filename)
-		f1.savefig(filename)
-		plt.close(f1)
-		
-		"""
-		Label latent states according to the probability of belonging to
-		one class.
-		"""
-		behaviorIDX = np.arange(len(self.sleepStages))+1
-		stateLabel = np.zeros((uniqueActive.shape[0], 2), dtype=int)
-		stateLabel[:, 0] = self.uniqueStates[:, 0]
-		for lstate in stateLabel[:, 0]:
-			idxMax = self.lstateColor[lstate, :].argmax()
-			
-			if self.lstateColor[lstate, idxMax] > 0.5:
-				stateLabel[lstate, 1] = behaviorIDX[idxMax]
-		
-		f1 = plt.figure(figsize=(20,20))
-		f1.suptitle('Unique latent states in MDS')
-		
-		for cl in behaviorIDX:
-			plt.scatter(pos[stateLabel[:, 1]==cl, 0], pos[stateLabel[:, 1]==cl, 1], s=20, c=colors[cl-1]['color'], label=self.sleepStages[cl-1])
-		plt.scatter(pos[stateLabel[:, 1]==0, 0], pos[stateLabel[:, 1]==0, 1], s=20, c='#878787', label='Non-clear')
-		legend_properties = {'weight':'bold', 'size':15}
-		plt.legend(frameon=False, borderaxespad=0., prop=legend_properties)#, bbox_to_anchor=(.9, .9), loc=2)
-		filename = 'statesInMDScolored.png'
-		filename = os.path.join(saveDir, filename)
-		f1.savefig(filename)
-		plt.close(f1)
-		
-		"""
-		Visualize hamming distance array.
-		"""
-		labels = ['f%s' %i for i in range(uniqueActive.shape[0])]
-		f = plt.figure(figsize=(10,10))
-		#plt.pcolor(dpcaCov, cmap='RdYlGn_r')
-		ax = f.add_subplot(111)
-		#plt.pcolor(dCov2, cmap='seismic')
-		hmat = plt.pcolor(HamDist, cmap='RdBu_r')
-		#hmat = plt.pcolor(dCov2, cmap='RdBu_r')
-		
-		# set the limits of the plot to the limits of the data
-		plt.axis([0, HamDist.shape[0], 0, HamDist.shape[0]])
-		
-		# want a more natural, table-like display
-		ax.invert_yaxis()
-		ax.xaxis.tick_top()
-		
-		plt.tick_params(
-							axis='x',          # changes apply to the x-axis
-							which='both',      # both major and minor ticks are affected
-							bottom='off',      # ticks along the bottom edge are off
-							top='off',         # ticks along the top edge are off
-							labelbottom='off') # labels along the bottom edge are off
-			
-		plt.tick_params(
-						axis='y',          # changes apply to the x-axis
-						which='both',      # both major and minor ticks are affected
-						left='off',      # ticks along the bottom edge are off
-						right='off',         # ticks along the top edge are off
-						labelleft='on') # labels along the bottom edge are off
-		
-		divider4 = make_axes_locatable(ax)
-		cax4 = divider4.append_axes("right", size="5%", pad=0.25)
-		
-		cb = plt.colorbar(hmat, cax=cax4) #ticks=v)
-		
-		for l in cb.ax.yaxis.get_ticklabels():
-				l.set_weight("bold")
-				l.set_fontsize(15)
-		
-		plt.savefig(saveDir + '/hamDistMat.png')#, transparent=True, dpi=100)
-		plt.close(f)
-		
-		"""
-		Visualize euclidean distance between points after MDS.
-		"""
-		labels = ['f%s' %i for i in range(Dissimilarity.shape[0])]
-		f = plt.figure(figsize=(10,10))
-		ax = f.add_subplot(111)
-		hmat = plt.pcolor(euDist, cmap='RdBu_r')
-		
-		# set the limits of the plot to the limits of the data
-		plt.axis([0, euDist.shape[0], 0, euDist.shape[0]])
-		
-		# want a more natural, table-like display
-		ax.invert_yaxis()
-		ax.xaxis.tick_top()
-		
-		plt.tick_params(
-							axis='x',          # changes apply to the x-axis
-							which='both',      # both major and minor ticks are affected
-							bottom='off',      # ticks along the bottom edge are off
-							top='off',         # ticks along the top edge are off
-							labelbottom='off') # labels along the bottom edge are off
-			
-		plt.tick_params(
-						axis='y',          # changes apply to the x-axis
-						which='both',      # both major and minor ticks are affected
-						left='off',      # ticks along the bottom edge are off
-						right='off',         # ticks along the top edge are off
-						labelleft='on') # labels along the bottom edge are off
-		
-		divider4 = make_axes_locatable(ax)
-		cax4 = divider4.append_axes("right", size="5%", pad=0.25)		
-		
-		cb = plt.colorbar(hmat, cax=cax4) #ticks=v)
-		
-		for l in cb.ax.yaxis.get_ticklabels():
-				l.set_weight("bold")
-				l.set_fontsize(15)
-		
-		plt.savefig(saveDir + '/euDistMDS.png')#, transparent=True, dpi=100)
-		plt.close(f)
-
     # Function of visualizing the histogram of the latent states
     def statesHistogram(self):
 		'''
@@ -1451,12 +1274,20 @@ class statesAnalysis(object):
 		
 		width = .8
 		ax.bar(self.uniqueStates[:, 0], self.uniqueStates[:, 1], width, color=colors[1]['color'], edgecolor = "none")	
-		ax.set_xlabel('Latent State')
+		ax.set_xlabel('Latent States')
 		ax.set_ylabel('Number of frames')
 		#plt.legend(loc='best')	
 		ax.set_xlim([0, self.uniqueStates.shape[0]])
 		ax.set_ylim([0, np.max(self.uniqueStates[:, 1])])
 		
+		# yint = []
+		# locs, l = plt.yticks()
+		# for each in locs:
+			# yint.append( round(each, 2) )
+		# plt.yticks(yint)
+		
+		# ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=30)
+				
 		filename = 'lStatesHistogram.png'
 		filename = os.path.join('./statesHistogram/', filename)
 		f1.savefig(filename)
@@ -1650,11 +1481,19 @@ class statesAnalysis(object):
 		plt.setp(xtickNames, fontsize=70)
 		ax1.xaxis.set_ticks_position('none')
 		ax1.yaxis.set_ticks_position('none')		
+		
+		yint = []
+		locs, l = plt.yticks()
+		for each in locs:
+			yint.append( round(each, 2) )
+		plt.yticks(yint)
+		
 		ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=50)
+		
 		ax1.xaxis.labelpad = 30
 		ax1.yaxis.labelpad = 20
 		ax1.tick_params(direction='out', pad=20)
-		plt.draw()
+		plt.draw()		
 		
 		legend_properties = {'weight':'bold', 'size':60}
 		plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.8, 1.), loc=2)
@@ -1694,10 +1533,18 @@ class statesAnalysis(object):
 		
 		[n, bins, patches] = plt.hist(entropies, bin_list, range=(graph_minimum, graph_maximum), edgecolor = 'none', facecolor = colors[1]['color'])
 		
-		
+		yint = []
+		locs, l = plt.xticks()
+		for each in locs:
+			yint.append( round(each, 2) )
+		plt.xticks(yint)
 		ax.set_xticklabels(ax.get_xticks(), fontweight='bold', fontsize=17)
 		ax.xaxis.labelpad = 20
-		ax.yaxis.labelpad = 20
+		ax.yaxis.labelpad = 20		
+		
+		legend_properties = {'weight':'bold', 'size':30}
+		legend = plt.legend(prop=legend_properties)
+		frame = legend.get_frame().set_alpha(0)
 		
 		plt.title('Histogram of Entropies', fontsize=25, fontweight='bold')
 		plt.xlabel('Entropy', fontsize=25, fontweight='bold')
@@ -1738,17 +1585,24 @@ class statesAnalysis(object):
 			ax1.set_ylabel('Normalized Count', fontweight='bold', fontsize=20)
 		ax1.set_xlabel('Latent States', fontweight='bold', fontsize=20)
 		ax1.xaxis.set_ticks_position('none')
-		ax1.yaxis.set_ticks_position('none')		
+		ax1.yaxis.set_ticks_position('none')	
+		
+		yint = []
+		locs, l = plt.yticks()
+		for each in locs:
+			yint.append( round(each, 2) )
+		plt.yticks(yint)	
 		ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=17)
+		
 		ax1.set_xlim([0, len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0])-1])		
 		ax1.set_xticks(np.linspace(0, len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0]), num=10, dtype=np.int32), minor=False)
-		ax1.set_xticklabels(ax1.get_xticks(), fontweight='bold', fontsize=17)
-		
+		ax1.set_xticklabels(ax1.get_xticks(), fontweight='bold', fontsize=17)		
+				
 		red_patch = mpatches.Patch(color=(0.0, 0.0, 1.0), label='Wakefulness')
 		green_patch = mpatches.Patch(color=(0.0, 1.0, 0.0), label='NREM')
 		blue_patch = mpatches.Patch(color=(1.0, 0.0, 0.0), label='REM')
 		legend_properties = {'weight':'bold'}
-		legend = plt.legend(handles=[red_patch, green_patch, blue_patch], borderaxespad=0., fontsize=17, prop=legend_properties)
+		legend = plt.legend(handles=[red_patch, green_patch, blue_patch], borderaxespad=0., fontsize=30, prop=legend_properties)
 		frame = legend.get_frame().set_alpha(0)
 		
 		fname = 'coloredHistogram' + name + '.png'		
@@ -1865,10 +1719,7 @@ if __name__ == "__main__":
 	# sleep stages as a colorMat
 	print "Latent states' distribution over sleep stages.."
 	model.stageDistribution()
-	
-	print "Multi-dimensional plot of the binary states.."
-	model.mdsScale()
-	
+		
 	print "Computing entropy and mutual information.."	
 	model.entropyMIcontrol()
 	
