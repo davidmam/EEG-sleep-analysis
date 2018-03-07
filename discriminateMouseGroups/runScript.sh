@@ -18,6 +18,8 @@
 #!/bin/bash
 refDir='/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/'
 
+# normFlag=1 : histograms are normalized using L2 normalization
+# default: normFlag=0
 normFlag=0
 
 python2 -W ignore classificationEsnemble.py -refDir ${refDir} -normFlag ${normFlag}

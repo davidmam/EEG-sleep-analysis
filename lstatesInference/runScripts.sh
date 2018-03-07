@@ -15,9 +15,16 @@
 #*****************************************************************************
 
 
+# set the done to "True" if the training epochs you set in the exp_details file
+# have been reached
+
+# set the done to "False" if you wish to perform the analysis at an earlier iteration
+
 #!/bin/bash
 BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
 
+# set here the name of the final weights matrix in case the
+# done flag is set to True :
 modelName="ws_fac11_cov11_mean10.mat"
 
 python2 inferStates.py -f ${BASE_DIR} -done "True" -m ${modelName}
