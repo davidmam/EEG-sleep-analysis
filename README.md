@@ -17,13 +17,13 @@ Refer to:
 Third-Order Boltzmann Machines", CVPR 2010"
 
 
-REQUIREMENTS:
+## REQUIREMENTS:
             - an NVIDIA GPU
             - NVIDIA drivers
             - cuda
             - python 2.7
 
-Python packages needed:
+## Python packages needed:
             - cudamat
             - numpy
             - cPickle
@@ -37,7 +37,7 @@ Python packages needed:
             - PIL.Image
 
             
-The code has been developed and tested on arch linux.
+## The code has been developed and tested on arch linux.
 
 ********************************************************************************
 
