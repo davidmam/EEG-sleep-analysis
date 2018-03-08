@@ -7,10 +7,17 @@ npRandState = 123
 
 [EXP_DETAILS]
 
+# set the path to the directory where the data have been stored:
 dsetDir = /home/vkatsageorgiou/mouseSleepAnalysis/experiment1/
+
+# set the name of the dataset to be analysed:
+# it can be a .mat or a .npz file (see sampleData)
 dSetName = Data.npz
 
+# set the path to the analysis directory:
 expsDir = /home/vkatsageorgiou/mouseSleepAnalysis/experiment1/
+
+# give a name to your experiment:
 expID = mcRBManalysis
 
 #########################################################################################################################################

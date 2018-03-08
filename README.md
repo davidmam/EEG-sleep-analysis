@@ -1,5 +1,5 @@
 THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE FILE
-                AT THE SOURCE DIRECTORY.
+                        AT THE SOURCE DIRECTORY.
 
 Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 
@@ -52,7 +52,7 @@ To perform the analysis presented in the paper, follow the next steps:
     - create a folder where the analysis will be stored & copy inside the 
       configuration files that can be found at ./trainModel/configurationFiles/
       Modify the configuration files accordingly
-    - go to ./trainModel/ & run the "run_gpu.sh" script after having modifying it
+    - go to ./trainModel/ & run the "run_gpu.sh" script after having modified it
       accordingly
       
 ## Step 2: latent states inference
