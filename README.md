@@ -12,7 +12,7 @@ This software was written as part of the research conducted at PAVIS,
 Istituto Italiano di Tecnognolia (IIT) - (https://pavis.iit.it/).
 
 
-## PUBLICATION : 
+## PUBLICATION
 V.-M. Katsageorgiou, D. Sona, M. Zanotto, G. Lassi, C. Garcia-Garcia, V. Tucci, V. Murino,
 "A Novel Unsupervised Analysis of Electrophysiological Signals Reveals New Sleep Sub-stages in Mice"
 
@@ -24,13 +24,13 @@ Refer to:
 Third-Order Boltzmann Machines", CVPR 2010"
 
 
-## REQUIREMENTS:
+## REQUIREMENTS
             - an NVIDIA GPU
             - NVIDIA drivers
             - cuda
             - python 2.7
 
-## Python packages needed:
+## Python packages required
             - cudamat
             - numpy
             - cPickle
@@ -48,7 +48,7 @@ Third-Order Boltzmann Machines", CVPR 2010"
 
 ********************************************************************************
 
-## HOW TO RUN THE CODE:
+## HOW TO RUN THE CODE
 
 Each sub-directory includes a bash script that can be run in order to run the 
 corresponding scripts.
