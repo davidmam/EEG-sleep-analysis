@@ -30,7 +30,7 @@ Third-Order Boltzmann Machines", CVPR 2010"
             - cuda
             - python 2.7
 
-## Python packages required
+## Python PACKAGES REQUIRED
             - cudamat
             - numpy
             - cPickle
