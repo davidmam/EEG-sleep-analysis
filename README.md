@@ -1,3 +1,5 @@
+## COPYRIGHT
+
 THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE FILE
                         AT THE SOURCE DIRECTORY.
 
@@ -6,8 +8,13 @@ Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
 @author : vasiliki.katsageorgiou@gmail.com
 
 
-PUBLICATION : A Novel Unsupervised Analysis of Electrophysiological Signals 
-                        Reveals New Sleep Sub-stages in Mice
+This software was written as part of the research conducted at PAVIS, 
+Istituto Italiano di Tecnognolia (IIT) - (https://pavis.iit.it/).
+
+
+## PUBLICATION : 
+V.-M. Katsageorgiou, D. Sona, M. Zanotto, G. Lassi, C. Garcia-Garcia, V. Tucci, V. Murino,
+"A Novel Unsupervised Analysis of Electrophysiological Signals Reveals New Sleep Sub-stages in Mice"
 
 The given scripts perfom unsupervised analysis of EEG/EMG mouse data employing 
 the mean-covariance Restricted Boltzmann Machine (mcRBM) by Marc'Aurelio Ranzato.
