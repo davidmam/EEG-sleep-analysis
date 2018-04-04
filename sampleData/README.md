@@ -32,9 +32,9 @@ This template consists of 4 data arrays, described below:
                       epochs, and columns are described as follows:
                       * column 1: epoch ID
                       * column 2: ground truth sleep stage ID, where
-                                  1, is associated with wakefulness,
-                                  2, is associated with NREM sleep,
-                                  3, is associated with REM sleep
+                                  1 is associated with wakefulness,
+                                  2 is associated with NREM sleep,
+                                  3 is associated with REM sleep
                       * column 3: the epoch date-time
 
 For more information or possible problems, please contact:
