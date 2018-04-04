@@ -6,11 +6,11 @@ provided in the "sampleData.npz" file.
 This template consists of 4 data arrays, described below:
 
 1. **bandsD.npy**       : an Nx6 data array, where N is the number of
-                      epochs, and columns refer to the 5 EEG bands 
-                      & the EMG with the following order:
-                      "Delta, Theta, Alpha, Beta, Gamma, EMG".
-                      Data values are associated with the EEG bands'
-                      power and the EMG integral values, respectively.
+                          epochs, and columns refer to the 5 EEG bands 
+                          & the EMG with the following order:
+                          "Delta, Theta, Alpha, Beta, Gamma, EMG".
+                          Data values are associated with the EEG bands'
+                          power and the EMG integral values, respectively.
 
 2. **d.npy**            : an Nx11 data array, where N is the number of
                       epochs, and columns refer to all possible ratios 
