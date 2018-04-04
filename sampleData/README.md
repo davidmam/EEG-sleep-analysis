@@ -19,23 +19,23 @@ This template consists of 4 data arrays, described below:
 
 3. **epochsLinked.npy** : an Nx4 data array, where N is the number of
                       epochs, and columns are described as follows:
-                      - column 1: epoch ID
-                      - column 2: epoch index (currently not used)
-                      - column 3: ground truth sleep stage ID, where
+                      * column 1: epoch ID
+                      * column 2: epoch index (currently not used)
+                      * column 3: ground truth sleep stage ID, where
                                   1, is associated with wakefulness,
                                   2, is associated with NREM sleep,
                                   3, is associated with REM sleep
-                      - column 4: the subject ID (used in multi-subject
+                      * column 4: the subject ID (used in multi-subject
                                   analysis only)
 
 4. **epochTime.npy**    : an Nx3 data array, where N is the number of
                       epochs, and columns are described as follows:
-                      - column 1: epoch ID
-                      - column 2: ground truth sleep stage ID, where
+                      * column 1: epoch ID
+                      * column 2: ground truth sleep stage ID, where
                                   1, is associated with wakefulness,
                                   2, is associated with NREM sleep,
                                   3, is associated with REM sleep
-                      - column 3: the epoch date-time
+                      * column 3: the epoch date-time
 
 For more information or possible problems, please contact:
 vasiliki.katsageorgiou@gmail.com
