@@ -38,5 +38,5 @@ This template consists of 4 data arrays, described below:
                       - column 3: the epoch date-time
 
 For more information or possible problems, please contact:
-@author : vasiliki.katsageorgiou@gmail.com
+vasiliki.katsageorgiou@gmail.com
     
