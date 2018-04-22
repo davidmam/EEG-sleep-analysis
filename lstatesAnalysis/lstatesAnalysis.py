@@ -617,50 +617,51 @@ class statesAnalysis(object):
 				data_to_plot.append(strainsDistr_dict[k][:, lstate]/self.lstatesPopulation[lstate])
 		
 			fig = plt.figure(figsize=(15,12))
-			fig.suptitle('Latent State ' + str(lstate) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM Sleep: ' + str(length_nrem*100) + '%, REM Sleep: ' + str(length_rem*100) + '%' + '\nTotal number of epochs: ' + str(len(latent_frames)), fontsize=25, fontweight='bold')
+			fig.suptitle('LS ' + str(lstate) + ' - Total: ' + str(len(latent_frames)) + ' epochs' + '\nWAKE: ' + str(length_awake*100) + '%, NREM: ' + str(length_nrem*100) + '%, REM: ' + str(length_rem*100) + '%', fontsize=35, fontweight='bold')
 			
 			ax = fig.add_subplot(111)
 			ax.grid(False)
 			ax.patch.set_facecolor('0.85')
 			ax.patch.set_alpha(0.5)
-			
 			ax.spines['top'].set_visible(False)
 			ax.spines['right'].set_visible(False)
-			ax.spines['bottom'].set_visible(False)
-			ax.spines['left'].set_visible(False)
+			ax.spines['bottom'].set_linewidth(5)
+			ax.spines['bottom'].set_color('k')
+			ax.spines['left'].set_linewidth(5)
+			ax.spines['left'].set_color('k')
 			ax.yaxis.set_ticks_position('none')
 			ax.xaxis.set_ticks_position('none')
-			ax.set_ylabel('Frequency', fontweight='bold', fontsize=25)
+			ax.set_ylabel('Frequency', fontweight='bold', fontsize=35)
 			
 			
 			bp = plt.boxplot(data_to_plot, patch_artist=True)
 			
 			plt.setp(bp['boxes'],            # customise box appearance
-					 edgecolor='k',#colors[1],         # outline colour
-					 linewidth=5.,             # outline line width
-					 facecolor='None')     # fill box with colour
-			plt.setp(bp['whiskers'], color='#999999', linewidth=1.5)
+					 edgecolor='k',          # outline colour
+					 linewidth=5.,           # outline line width
+					 facecolor='None')       # fill box with colour
+			plt.setp(bp['whiskers'], color='k', linestyle='--', linewidth=4.5)
 			
 			plt.setp(bp['medians'],          # customize median lines
-					 color='k',#'#1a1a1a',            # line colour
-					 linewidth=5.)             # line thickness
+					 color='k',				 # line colour
+					 linewidth=5.)           # line thickness
 			
-						
+								
 			xtickNames = ax.set_xticklabels(self.groupNames)
-			plt.setp(xtickNames, fontsize=25, fontweight='bold')
+			plt.setp(xtickNames, fontsize=35, fontweight='bold')
 			
 			yint = []
-			locs, l = plt.yticks()
+			locs, labels = plt.yticks()
 			for each in locs:
-				yint.append( round(each, 2) )
+				yint.append(round(each, 2))
 			plt.yticks(yint)
 			
-			ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=20)			
+			ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=30)
 			
-			fname = 'lstate%d.png' %lstate
+			fname = 'lstate%d.tiff' %lstate
 			fname = os.path.join('./groupBoxPlots/', fname)
-			fig.savefig(fname, transparent=True, dpi=100)
-			plt.close(fig)		
+			fig.savefig(fname, format='tiff', transparent=True, dpi=100)
+			plt.close(fig)
 		
     
     def visibleDistributions(self):
@@ -773,7 +774,7 @@ class statesAnalysis(object):
 		#-- Re-order matrix for Visualization:
 		self.C1 = self.reorderMat(self.lstateColor)
 		#-- Visualize array:
-		column_labels = ['Wakefulness', 'NREM-sleep', 'REM-sleep']
+		column_labels = ['Wakefulness', 'NREM', 'REM']
 		self.displayMat(self.lstateColor[self.C1, :], column_labels, './heatMap/heatMap')
 		
 		#--- Remove the singleton Latent-states:
@@ -803,16 +804,17 @@ class statesAnalysis(object):
 		if not os.path.isdir('transMatrices'):
 			os.makedirs('transMatrices')
 		
-		"""
-		Iterate through videoIDs if mulit-videos experiment:
-		"""
+		""" Compute overall experiment transitions """
+		self.obsKeysGroup = self.obsKeys
+		self.transitionsMatrix('./transMatrices/')
+		
+		del self.obsKeysGroup
+		
+		""" Iterate through videoIDs if mulit-videos experiment """		
 		if self.multi:			
 			for self.group in self.mouseGroups:
 				self.obsKeysGroup = self.obsKeys[self.obsKeys[:, self.obsKeys.shape[1]-1] == self.group, :]
-				self.transitionsMatrix('./transMatrices/')
-		else:
-			self.obsKeysGroup = self.obsKeys
-			self.transitionsMatrix('./transMatrices/')
+				self.transitionsMatrix('./transMatrices/')			
 		
 		del self.obsKeysGroup
     
@@ -895,26 +897,23 @@ class statesAnalysis(object):
 		observed latent states.
 		'''
 		
-		if not os.path.isdir('entropy'):
-			os.makedirs('entropy')
+		if not os.path.isdir('entropyMI'):
+			os.makedirs('entropyMI')
 		
-		"""
-		Latent states' PDF: lstatePDF = p(stage | lstate)
-		"""
+		""" Latent states' PDF: 
+								lstatePDF = p(stage | lstate) """
 		lstatePDF = np.concatenate((self.uniqueStates[:, :2], self.lstateColor), axis=1)
 		countsArray = np.concatenate((self.uniqueStates[:, :2], self.lstateCount), axis=1)
 		
-		"""
-		Compute the Marginal of each Stage (class marginal)
-		..where stagePDF = p(lstate | stage)
-		"""
+		""" Compute the Marginal of each Stage (class marginal)
+			..where stagePDF = p(lstate | stage) """
 		stagePDF = self.lstateCount
 		stagePDF = stagePDF.astype(np.float32)		
 		stagePDF = stagePDF/stagePDF.sum(axis=0)		
 		stagePDF = np.concatenate((self.uniqueStates[:, :2], stagePDF), axis=1)
 		
-		np.savez_compressed('./entropy/lstatePDF.npz', lstatePDF=lstatePDF, lstateCount=countsArray)
-		np.savez('./entropy/stagePDF.npz', stagePDF=stagePDF)
+		np.savez_compressed('./entropyMI/lstatePDF.npz', lstatePDF=lstatePDF, lstateCount=countsArray)
+		np.savez('./entropyMI/stagePDF.npz', stagePDF=stagePDF)
 			
 		#savemat('./entropy/lstatePDF.mat', mdict={'lstatePDF':lstatePDF})
 		#savemat('./entropy/lstateCount.mat', mdict={'lstateCount':countsArray})
@@ -924,7 +923,7 @@ class statesAnalysis(object):
 		Remove latent states smaller than the desired threshold
 		"""		
 		idx = np.where( self.uniqueStates[:, 1] <= self.threshold )[0]
-		np.savez('./entropy/removedStates.npz', removedStates=self.uniqueStates[idx, 0])
+		np.savez('./entropyMI/removedStates.npz', removedStates=self.uniqueStates[idx, 0])
 		#savemat('./entropy/removedStates.mat', mdict={'removedStates':self.uniqueStates[idx, 0]})
 		
 		lstatePDF = np.delete(lstatePDF, idx, 0)
@@ -934,7 +933,7 @@ class statesAnalysis(object):
 		""" Compute the Mutual-Information : I(lstates; stages) """
 		MI = self.mutualInformation(countsArray[:, 2:])
 		
-		with open ('./entropy/mutualInformation.txt','w') as f:
+		with open ('./entropyMI/mutualInformation.txt','w') as f:
 			f.write("\n The mutual information is : %s bits" %MI)
 			f.close()
 		
@@ -942,31 +941,34 @@ class statesAnalysis(object):
 		lstateEntropy = self.variableEntropy(lstatePDF[:, 2:])
 		lstateEntropy = np.concatenate((lstatePDF[:, :2], lstateEntropy), axis=1)
 		
-		np.savez('./entropy/lstatesEntropy.npz', lstateEntropy=lstateEntropy)
+		np.savez('./entropyMI/lstatesEntropy.npz', lstateEntropy=lstateEntropy)
 		#savemat('./entropy/lstateEntropy.mat', mdict={'lstateEntropy':lstateEntropy})
 		
-		self.entropiesHistogram(lstateEntropy[:, lstateEntropy.shape[1]-1], 'entropy')
+		self.entropiesHistogram(lstateEntropy[:, lstateEntropy.shape[1]-1], 'entropyMI')
 		
 		""" Compute the Entropy of each stage """
-		stagesH, Hx = self.stageEntropy(countsArray[:, 2:], './entropy/mutualInformation.txt')
+		stagesH, Hx = self.stageEntropy(countsArray[:, 2:], './entropyMI/mutualInformation.txt')
 		
-		np.savez('./entropy/stageEntropy.npz', stageEntropy=stagesH)
+		np.savez('./entropyMI/stageEntropy.npz', stageEntropy=stagesH)
 		#savemat('./entropy/stageEntropy.mat', mdict={'stageEntropy':stagesH})
 		
 		""" Compute the mutual information for each stage """
 		MI_stage = self.mutualInformation_perStage(countsArray[:, 2:])
 		
-		with open ('./entropy/mutualInformation.txt','a') as f:
-			f.write("\n Wakefulness entropy = %s" %stagesH[0])
-			f.write("\n NREM entropy = %s" %stagesH[1])
-			f.write("\n REM entropy = %s" %stagesH[2])
+		with open ('./entropyMI/mutualInformation.txt','a') as f:
+			f.write("\n Stage Entropy:")
+			f.write("\n Wakefulness = %s" %stagesH[0])
+			f.write("\n NREM = %s" %stagesH[1])
+			f.write("\n REM = %s\n" %stagesH[2])
+			f.write("\n Stage Normalized MI:")
 			f.write("\n The MI/H(wake) = %s" %(MI_stage[0]/stagesH[0]))
 			f.write("\n The MI/H(nrem) = %s" %(MI_stage[1]/stagesH[1]))
-			f.write("\n The MI/H(rem) = %s" %(MI_stage[2]/stagesH[2]))
+			f.write("\n The MI/H(rem) = %s\n" %(MI_stage[2]/stagesH[2]))
+			f.write("\n Overall Normalized MI:")
 			f.write("\n The MI/H(Stage) = %s" %(MI/Hx))
 			f.close()
 		
-		self.MI_stimulusH_barPlot(MI_stage, stagesH, MI/Hx, 'entropy')
+		self.MI_stimulusH_barPlot(MI_stage, stagesH, MI/Hx, 'entropyMI')
     
     def mutualInformation(self, Count):
 		'''
@@ -1323,7 +1325,7 @@ class statesAnalysis(object):
 		
 		ax.set_xticklabels(column_labels, minor=False, fontsize=25, fontweight='bold')#, color='w')
 		ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=15)#, color='w')
-		ax.set_ylabel("Latent-States' IDs", fontsize=25, fontweight='bold')#, color='w')
+		ax.set_ylabel("Latent-States", fontsize=25, fontweight='bold')#, color='w')
 		
 		
 		divider4 = make_axes_locatable(ax)
@@ -1334,7 +1336,8 @@ class statesAnalysis(object):
 			l.set_weight("bold")
 			l.set_fontsize(15)
 			
-		fig.savefig(filename + '.png', transparent=True, dpi=100)
+		fig.savefig(filename + '.tiff', format='tiff', transparent=True, dpi=100)
+		plt.close(fig)
     
     def displayTransitionsArray(self, A, filename):
 		'''
@@ -1369,7 +1372,9 @@ class statesAnalysis(object):
 		gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1]) 
 		ax1 = plt.subplot(gs[0])
 		
-		fig.suptitle('Latent State ' + str(i) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM Sleep: ' + str(length_nrem*100) + '%, REM Sleep: ' + str(length_rem*100) + '%' + '\nTotal number of epochs: ' + str(population), fontsize=23, fontweight='bold')
+		fig.suptitle('LS ' + str(i) + ' - Total: ' + str(population) + ' epochs' + 
+					 '\nWAKE: ' + str(length_awake*100) + '%, NREM: ' + str(length_nrem*100) + 
+					 '%, REM: ' + str(length_rem*100) + '%', y=1.001, fontsize=35, fontweight='bold')
 		bp1 = ax1.boxplot(d_to_plot_1, patch_artist=True)
 		
 		ax1.grid(False)
@@ -1377,12 +1382,14 @@ class statesAnalysis(object):
 		ax1.patch.set_alpha(0.5)
 		ax1.spines['top'].set_visible(False)
 		ax1.spines['right'].set_visible(False)
-		ax1.spines['bottom'].set_visible(False)
-		ax1.spines['left'].set_visible(False)
-		ax1.set_ylabel('Log Power', fontweight='bold', fontsize=25)
+		ax1.spines['bottom'].set_linewidth(5)
+		ax1.spines['bottom'].set_color('k')
+		ax1.spines['left'].set_linewidth(5)
+		ax1.spines['left'].set_color('k')
+		ax1.set_ylabel('Log Power', fontweight='bold', fontsize=35)
 		ax1.set_ylim(range_1)
 		ax1.set_yticks(np.linspace(range_1[0], range_1[1], num=int(range_1[1]-range_1[0])+2, dtype=np.int32), minor=False)
-		ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=15)
+		ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=35)
 		ax1.xaxis.set_ticks_position('none')
 		ax1.yaxis.set_ticks_position('none')
 		
@@ -1396,11 +1403,13 @@ class statesAnalysis(object):
 		ax2.patch.set_alpha(0.5)
 		ax2.spines['top'].set_visible(False)
 		ax2.spines['right'].set_visible(False)
-		ax2.spines['bottom'].set_visible(False)
-		ax2.spines['left'].set_visible(False)
+		ax2.spines['bottom'].set_linewidth(5)
+		ax2.spines['bottom'].set_color('k')
+		ax2.spines['left'].set_linewidth(5)
+		ax2.spines['left'].set_color('k')
 		ax2.set_ylim(range_2)
 		ax2.set_yticks(np.linspace(range_2[0], range_2[1], num=int(range_2[1]-range_2[0])+2, dtype=np.int32), minor=False)
-		ax2.set_yticklabels(ax2.get_yticks(), fontweight='bold', fontsize=15)
+		ax2.set_yticklabels(ax2.get_yticks(), fontweight='bold', fontsize=35)
 		ax2.xaxis.set_ticks_position('none')
 		ax2.yaxis.set_ticks_position('none')
 		
@@ -1408,36 +1417,36 @@ class statesAnalysis(object):
 			tl.set_color('#00441b')
 		
 		xtickNames = ax1.set_xticklabels(labels_1)
-		plt.setp(xtickNames, rotation=0, fontsize=25, fontweight='bold')
+		plt.setp(xtickNames, rotation=90, fontsize=35, fontweight='bold')
 		
 		xtickNames2 = ax2.set_xticklabels(labels_2)
-		plt.setp(xtickNames2, rotation=0, fontsize=25, fontweight='bold')
+		plt.setp(xtickNames2, rotation=0, fontsize=35, fontweight='bold')
 				
 		plt.setp(bp1['boxes'],            # customise box appearance
 				 color='#b2182b',         # outline colour
-				 linewidth=1.5)#,             # outline line width
-				 #facecolor='#b2182b')     # fill box with colour
-		plt.setp(bp1['whiskers'], color='#999999', linewidth=1.5)
+				 linewidth=2.)
+				 
+		plt.setp(bp1['whiskers'], color='#999999', linewidth=2.)
 		plt.setp(bp1['fliers'], color='k', marker='+')
 		
 		plt.setp(bp1['medians'],          # customize median lines
-				 color='#1a1a1a',            # line colour
-				 linewidth=1.5)             # line thickness
+				 color='#1a1a1a',         # line colour
+				 linewidth=2.)            # line thickness
 		
 		
 		plt.setp(bp2['boxes'],            # customise box appearance
 				 color='#00441b',         # outline colour
-				 linewidth=1.5)#,             # outline line width
-				 #facecolor='#74add1')     # fill box with colour
-		plt.setp(bp2['whiskers'], color='#999999', linewidth=1.5)
+				 linewidth=2.)
+				 
+		plt.setp(bp2['whiskers'], color='#999999', linewidth=2.)
 		plt.setp(bp2['fliers'], color='k', marker='+')
 		plt.setp(bp2['medians'],          # customize median lines
 				 color='#1a1a1a',            # line colour
-				 linewidth=1.5)             # line thickness
+				 linewidth=2.)             # line thickness
 		
-		fname = 'lstate%d.png' %i
+		fname = 'lstate%d.tiff' %i
 		fname = os.path.join(fig_path, fname)
-		fig.savefig(fname, transparent=True, dpi=100)
+		fig.savefig(fname, format='tiff', transparent=True, dpi=100)
 		plt.close(fig)
     
     def MI_stimulusH_barPlot(self, MI_stage, stagesH, overAll, saveDir):
@@ -1452,14 +1461,16 @@ class statesAnalysis(object):
 		plt.style.use('bmh')
 		colors = list(plt.rcParams['axes.prop_cycle'])
 		
-		fig = plt.figure(figsize=(35,30), frameon=False)
+		fig = plt.figure(figsize=(25,20), frameon=False)
 		ax1 = fig.add_subplot(111)
 		plt.grid(False)
 	
 		ax1.spines['top'].set_visible(False)
 		ax1.spines['right'].set_visible(False)
-		ax1.spines['bottom'].set_visible(True)
-		ax1.spines['left'].set_visible(False)
+		ax1.spines['bottom'].set_linewidth(15)
+		ax1.spines['bottom'].set_color('k')
+		ax1.spines['left'].set_linewidth(15)
+		ax1.spines['left'].set_color('k')
 		ax1.yaxis.set_ticks_position('left')
 		ax1.xaxis.set_ticks_position('bottom')
 		width = 0.5
@@ -1493,12 +1504,12 @@ class statesAnalysis(object):
 		ax1.tick_params(direction='out', pad=20)
 		plt.draw()		
 		
-		legend_properties = {'weight':'bold', 'size':60}
-		plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.8, 1.), loc=2)
+		legend_properties = {'weight':'bold', 'size':65}
+		plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.77, 1.05), loc=2)
 					
-		fname = 'MIstageH.png'
+		fname = 'MIstageH.tiff'
 		fname = os.path.join(saveDir, fname)
-		fig.savefig(fname, transparent=True, dpi=100)
+		fig.savefig(fname, format='tiff', transparent=True, dpi=100)
 		plt.close(fig)
     
     def entropiesHistogram(self, entropies, saveDir):

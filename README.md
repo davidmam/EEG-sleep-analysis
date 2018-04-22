@@ -80,8 +80,8 @@ To perform the analysis presented in the paper, follow the next steps:
 ## Step 4: mouse strains classification
       
     In case of multi-subject where different mouse strains have been included, you can 
-    whether you can discriminate among mouse groups using the classification approach 
-    that has been implemented in the scripts found in ./discriminateMouseGroups/
+    test whether you can discriminate among mouse groups using the classification approach 
+    that has been implemented in the script that ca be found in "./discriminateMouseGroups/".
     
     To do so, modify & run the "runScripts.sh".
     

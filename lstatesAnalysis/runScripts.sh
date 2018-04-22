@@ -16,7 +16,7 @@
 
 
 #!/bin/bash
-BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/"
+BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment2/"
 
 # in case of multi-subject analysis,
 # provide the mouse groups names (ex. Mixed,CD1,C57BL/6J  or Zfhx3Sci/+,Zfhx3+/+)
