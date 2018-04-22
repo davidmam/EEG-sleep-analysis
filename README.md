@@ -3,7 +3,7 @@
 THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE FILE
                         AT THE SOURCE DIRECTORY.
 
-Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+Copyright (C) 2017 V.-M. Katsageorgiou, D. Sona, V. Murino - All rights reserved
 
 @author : vasiliki.katsageorgiou@gmail.com
 
