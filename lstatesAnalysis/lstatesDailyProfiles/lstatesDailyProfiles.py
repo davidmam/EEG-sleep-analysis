@@ -18,6 +18,14 @@
 Script written for analysing the per strain daily profiles in the inferred 
 (from a trained RBM model) latent states for the study of sleep in mice.
 
+
+*********************************  OUTPUT    *********************************
+
+Output : a folder named as "dailyProfiles" including the per latent
+		 state daily profiles of the diferent mouse groups.
+		 		
+*****************************************************************************
+
 <vkatsageorgiou@vassia-PC>
 """
 
@@ -91,6 +99,12 @@ class dailyProfiles(object):
 		self.epochTime = self.epochTime[:self.obsKeys.shape[0], :]
 		
 		self.utc_transform()
+		
+		"""
+		Create unique array: epochsIDs - lstatesIDs - subjects - dayTime
+		"""
+		self.obsKeys = np.hstack((self.obsKeys, self.epochTime[:, self.epochTime.shape[1]-1].reshape(-1,1))).astype(int)
+		
     
     def utc_transform(self):
 		'''
@@ -125,12 +139,6 @@ class dailyProfiles(object):
 		
 		plt.style.use('bmh')
 		colors = ['#b2182b', '#238b45', '#3690c0', '#023858']		
-		
-		"""
-		Create unique array: epochsIDs - lstatesIDs - subjects - dayTime
-		"""
-		self.obsKeys = np.hstack((self.obsKeys, self.epochTime[:, self.epochTime.shape[1]-1].reshape(-1,1))).astype(int)
-		savemat('obsKeysTime.mat', mdict={'obsKeys':self.obsKeys})
 		
 		"""
 		Iterate through latent states:
@@ -211,9 +219,14 @@ class dailyProfiles(object):
 		Method for visualizing the distribution of each latent state in time
 		per group (strain).
 		'''
-		if not os.path.isdir('overAllstrains'):
-			os.makedirs('overAllstrains')
-					
+		
+		if not os.path.isdir('dailyProfiles'):
+			os.makedirs('dailyProfiles')
+		os.chdir('dailyProfiles')
+		if not os.path.isdir('plots'):
+			os.makedirs('plots')
+		
+		savemat('obsKeysTime.mat', mdict={'obsKeys':self.obsKeys})
 		
 		timeList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 		ind = np.arange(len(timeList))
@@ -252,9 +265,6 @@ class dailyProfiles(object):
 			ax1.grid(False)
 			width = 0.6
 			
-			#with open ('./overAllstrains/error.txt' %lstate,'a') as f:
-			#	f.write('\nLatent-state %d' %lstate)
-			
 			"""
 			Iterate through strains:
 			"""
@@ -289,9 +299,7 @@ class dailyProfiles(object):
 					p = Polynomial.fit(ind, count[timeList,1], self.polydeg)
 					pConv = p.convert(domain=[-1, 1])
 			
-					#err = self.computeError(ind, count[timeList,1], pConv.coef)
-					#with open ('./overAllstrains/error.txt' %lstate,'a') as f:
-					#	f.write('\nCurve error for strain %d : %s ' %(strain, str(err*100)) + "%")
+					
 					
 					if strain<maxStrainID:
 						if 'Zfhx3' in self.case:
@@ -343,35 +351,11 @@ class dailyProfiles(object):
 			frame = legend.get_frame().set_alpha(0)
 						
 			fname = 'lstate%d.png' %lstate
-			fname = os.path.join('./overAllstrains/', fname)
+			fname = os.path.join('./plots/', fname)
 			fig.savefig(fname, transparent=True, dpi=100)
 			plt.close(fig)
     
-    def computeError(self, x, y, c):
-		"""
-		Object for computing the average distance of the curve to the
-		bar graph.
-		"""
-		ydiff = []
-		k = 0
-		for xi in x:
-			yi = self.polynomialFunct(c, xi)
-			
-			ydiff.append( abs(y[k] - yi)/y[k] )			
-			k += 1
-		
-		return sum(ydiff)/len(y)
-    
-    def polynomialFunct(self, c, x):
-		"""
-		Polynomial function
-		"""
-		y = c[0]
-		for i in range(1, len(c)):
-			y += c[i]*(x**i)
-		
-		return y
-    
+
 
 
 if __name__ == "__main__":
@@ -392,6 +376,9 @@ if __name__ == "__main__":
 	print 'Loading data..'
 	model.loadData()
 
-	print 'Computing histograms..'
-	model.createHistograms()
+	print 'Computing daily profiles..'
+	#model.createHistograms()
 	model.combinedGroupHistograms()
+	
+	with open(args.f + 'doneDailyProfiles', 'w') as doneFile:
+		doneFile.write(datetime.datetime.strftime(datetime.datetime.now(), '%d/%m/%Y %H:%M:%S'))

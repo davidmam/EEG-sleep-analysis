@@ -17,7 +17,7 @@
 
 
 #!/bin/bash
-BASE_DIR="/home/vkatsageorgiou/Documents/experiments/miceSleep/testCode/sci/"
+BASE_DIR="/home/vkatsageorgiou/mouseSleepAnalysis/experiment3/"
 
 # training epochID
 epochID=9999
@@ -34,4 +34,10 @@ if [ ! -f "${BASE_DIR}doneHomoResp" ]
 else
     echo "computing the max absolute homostatic response per latent state"
     python2 -W ignore baselineRecoveryResponseMaxAbsDifference.py -refDir ${BASE_DIR} -epoch ${epochID} -deg ${deg}
+fi
+
+if [ -f "${BASE_DIR}doneHomoResp" ] 
+	then
+		echo "computing the max absolute homostatic response per latent state"
+		python2 -W ignore baselineRecoveryResponseMaxAbsDifference.py -refDir ${BASE_DIR} -epoch ${epochID} -deg ${deg}    
 fi

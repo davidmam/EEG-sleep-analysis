@@ -354,10 +354,10 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	
 	print 'Initialization..'
-	model = homostaticResponse(args.refDir, args.epoch, args.deg)
+	model = homostaticResponseAbsDiff(args.refDir, args.epoch, args.deg)
 
 	print 'Loading data..'
 	model.loadData()
 
 	print 'Computing circadian profiles..'
-	model.homostaticResponseAbsDiff()
+	model.combinedGroupHistograms()

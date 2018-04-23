@@ -28,4 +28,19 @@ deg=8
 # strains: "cd1c57mixed" OR "Zfhx3"
 strains="Zfhx3"
 
-python2 -W ignore lstatesDailyProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
+
+if [ ! -f "${BASE_DIR}doneDailyProfiles" ] 
+	then
+		echo "1: computing daily profiles"
+		
+		python2 -W ignore lstatesDailyProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
+else
+    echo "computing the per latent state daily profile's peaks"
+    python2 -W ignore peaksDetection.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
+fi
+
+if [ -f "${BASE_DIR}doneDailyProfiles" ] 
+	then
+		echo "2: computing the max absolute homostatic response per latent state"
+		python2 -W ignore peaksDetection.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
+fi

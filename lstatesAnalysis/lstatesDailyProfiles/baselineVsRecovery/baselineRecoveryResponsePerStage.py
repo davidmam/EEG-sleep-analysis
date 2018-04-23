@@ -401,4 +401,4 @@ if __name__ == "__main__":
 	model.combinedGroupHistograms()
 	
 	with open(args.refDir + 'doneHomoResp', 'w') as doneFile:
-		doneFile.write(datetime.strftime(datetime.now(), '%d/%m/%Y %H:%M:%S'))
+		doneFile.write(datetime.datetime.strftime(datetime.datetime.now(), '%d/%m/%Y %H:%M:%S'))
