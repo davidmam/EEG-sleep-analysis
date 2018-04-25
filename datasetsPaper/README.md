@@ -1,11 +1,11 @@
-### DESCRITPION OF DATASETS USED FOR THE PAPER
+## DESCRITPION OF DATASETS USED FOR THE PAPER
 
 The software expects the data to be formated as in the template 
 provided in the given files.
 
-## This template consists of 4 data arrays, described below:
+Each dataset consists of 4 data arrays, described below:
 
-1. **bandsD.npy**:
+## 1. **bandsD.npy**:
 	- an Nx6 data array, where N is the number of
 	epochs, and columns refer to the 5 EEG bands 
 	& the EMG with the following order:
@@ -13,13 +13,13 @@ provided in the given files.
 	<p>Data values are associated with the EEG bands'
 	power and the EMG integral values, respectively.
 
-2. **d.npy**:
+## 2. **d.npy**:
 	- an Nx11 data array, where N is the number of
 	epochs, and columns refer to all possible ratios 
 	between the 5 EEG bands & the EMG, with EMG being
 	associated with the last column.
 
-3. **epochsLinked.npy**:
+## 3. **epochsLinked.npy**:
 	- an Nx4 data array, where N is the number of
 	epochs, and columns are described as follows:
 	
@@ -31,7 +31,7 @@ provided in the given files.
 				- 3 is associated with REM sleep
 	- column 4: the subject ID (used in multi-subject analysis only)
 
-4. **epochTime.npy**:
+## 4. **epochTime.npy**:
 	- an Nx3 data array, where N is the number of
 	epochs, and columns are described as follows:
 	
@@ -41,5 +41,5 @@ provided in the given files.
 			   - 2 is associated with recovery (after sleep deprivation)
 	- column 3: the epoch date-time
 
-## For more information or possible problems, please contact:
+For more information or possible problems, please contact:
 <p>vasiliki.katsageorgiou@gmail.com
