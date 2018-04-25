@@ -42,5 +42,4 @@ This template consists of 4 data arrays, described below:
 	- column 3: the epoch date-time
 
 For more information or possible problems, please contact:
-<a href=vasiliki.katsageorgiou@gmail.com/></a>
-    
+<p>vasiliki.katsageorgiou@gmail.com
