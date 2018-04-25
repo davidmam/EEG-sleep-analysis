@@ -1,9 +1,9 @@
-## DESCRITPION OF DATASETS USED FOR THE PAPER
+### DESCRITPION OF DATASETS USED FOR THE PAPER
 
 The software expects the data to be formated as in the template 
 provided in the given files.
 
-This template consists of 4 data arrays, described below:
+## This template consists of 4 data arrays, described below:
 
 1. **bandsD.npy**:
 	- an Nx6 data array, where N is the number of
@@ -41,5 +41,5 @@ This template consists of 4 data arrays, described below:
 			   - 2 is associated with recovery (after sleep deprivation)
 	- column 3: the epoch date-time
 
-For more information or possible problems, please contact:
+## For more information or possible problems, please contact:
 <p>vasiliki.katsageorgiou@gmail.com
