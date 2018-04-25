@@ -9,7 +9,9 @@ This template consists of 4 data arrays, described below:
 	- an Nx6 data array, where N is the number of
 	epochs, and columns refer to the 5 EEG bands 
 	& the EMG with the following order:
-	**"Delta, Theta, Alpha, Beta, Gamma, EMG"**.
+	
+	**"Delta, Theta, Alpha, Beta, Gamma, EMG"**
+	
 	Data values are associated with the EEG bands'
 	power and the EMG integral values, respectively.
 
@@ -23,12 +25,12 @@ This template consists of 4 data arrays, described below:
 	- an Nx4 data array, where N is the number of
 	epochs, and columns are described as follows:
 	
-	- **column 1:** epoch ID
-	- **column 2:** epoch index (currently not used)
-	- **column 3:** ground truth sleep stage ID, where
-				1 is associated with wakefulness,
-				2 is associated with NREM sleep,
-				3 is associated with REM sleep
+	- **column 1**: epoch ID
+	- **column 2**: epoch index (currently not used)
+	- **column 3**: ground truth sleep stage ID, where
+				- 1 is associated with wakefulness,
+				- 2 is associated with NREM sleep,
+				- 3 is associated with REM sleep
 	- **column 4:** the subject ID (used in multi-subject
 			   analysis only)
 
