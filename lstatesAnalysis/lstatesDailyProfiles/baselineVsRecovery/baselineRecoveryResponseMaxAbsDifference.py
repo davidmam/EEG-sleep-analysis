@@ -177,12 +177,20 @@ class homostaticResponseAbsDiff(object):
 		data_x = []
 		data_y = []
 		labels = []
+		dataStore = {}
+		for si in self.strainIDs:
+			dataStore['strain%d' %si] = np.array([])
 		for self.lstate in self.lstates:
 				
 			idx = np.where(self.obsKeys[:,1]==self.lstate)[0]
 			
 			if len(idx) >= 1500:
 				currObsKeys = self.obsKeys[idx,:]
+				
+				w = len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==1))[0])
+				nr = len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==2))[0])
+				r = len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==3))[0])
+				
 				epochsW = round((len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==1))[0]) / len(currObsKeys)), 3)			
 				epochsNR = round((len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==2))[0]) / len(currObsKeys)), 3)
 				epochsR = round((len(np.where((currObsKeys[:, currObsKeys.shape[1]-5]==3))[0]) / len(currObsKeys)), 3)
@@ -238,7 +246,10 @@ class homostaticResponseAbsDiff(object):
 							max_absolute_difference = data_plot[:idx_12].max()
 							idx_point = np.where( data_plot==max_absolute_difference )[0]
 							x_point = x_plot[idx_point]
-							y_point = curve_difference[idx_point]					
+							y_point = curve_difference[idx_point]
+							
+							dStore = np.array([self.lstate, x_point, w, nr, r])
+							dataStore['strain%d' %self.strain] = np.vstack([dataStore['strain%d' %self.strain], dStore]) if dataStore['strain%d' %self.strain].size else dStore			
 							
 							if self.strain<maxStrainID:								
 								x_mutant = x_point
@@ -308,6 +319,8 @@ class homostaticResponseAbsDiff(object):
 		fname = os.path.join('./homostaticResponse/', fname)
 		fig.savefig(fname, format='tiff', transparent=True, dpi=100)
 		plt.close(fig)
+		
+		savemat('./homostaticResponse/data.mat', mdict={'data':dataStore, 'columnLabels':['lstate', 'xPeak', 'epochsWake', 'epochsNR', 'epochsR']})
     
     def computeDistribution(self, d):
 		"""
