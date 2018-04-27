@@ -75,7 +75,11 @@ To perform the analysis presented in the paper, follow the next steps:
       (see in lstatesAnalysis.py for more details regaring the output of the script)
       
     - go to ./lstatesDailyProfiles/ and run the "runScripts.sh" to get the daily profiles
-      of the inferred latent states.
+      of the inferred latent states & to find their peaks.
+	
+	In case of analysis of data including both baseline and recovery (after sleep deprivation) 
+	recordings, go to ./lstatesDailyProfiles/baselineVsRecovery/ to compute the homostatic
+	response of the observed latent states.
       
 ## Step 4: mouse strains classification
       

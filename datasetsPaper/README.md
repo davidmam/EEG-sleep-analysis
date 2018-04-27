@@ -1,9 +1,9 @@
-## SAMPLE DATA DESCRITPION
+## DESCRITPION OF DATASETS USED FOR THE PAPER
 
 The software expects the data to be formated as in the template 
-provided in the "sampleData.npz" file.
+provided in the given files.
 
-This template consists of 4 data arrays, described below:
+Each dataset consists of 4 data arrays, described below:
 
 ## 1. **bandsD.npy**:
 	- an Nx6 data array, where N is the number of epochs, and columns refer to the 5 EEG bands
@@ -38,4 +38,4 @@ This template consists of 4 data arrays, described below:
 		- column 3: the epoch date-time
 
 For more information or possible problems, please contact:
-<p>vasiliki.katsageorgiou@gmail.com    
+<p>vasiliki.katsageorgiou@gmail.com
