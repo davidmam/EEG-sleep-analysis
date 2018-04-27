@@ -25,12 +25,14 @@ Third-Order Boltzmann Machines", CVPR 2010"
 
 
 ## REQUIREMENTS
+
             - an NVIDIA GPU
             - NVIDIA drivers
             - cuda
             - python 2.7
 
 ## Python PACKAGES REQUIRED
+
             - cudamat
             - numpy
             - cPickle
