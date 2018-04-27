@@ -41,5 +41,5 @@ Each dataset consists of 4 data arrays, described below:
 
 ## QUESTIONS
 	For more information or possible problems, please contact:
-	<p>vasiliki.katsageorgiou@gmail.com
+	vasiliki.katsageorgiou@gmail.com
 	
