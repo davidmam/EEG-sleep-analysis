@@ -31,6 +31,6 @@ strains="cd1c57mixed"
 
 if [ -f "${BASE_DIR}doneDailyProfilesGT" ] 
 	then
-		echo "3: computing the max absolute homostatic response per latent state"
+		echo "3: computing the per manually scored sleep stage daily profiles"
 		python2 -W ignore groundTruthStageProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
 fi

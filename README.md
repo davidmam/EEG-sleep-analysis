@@ -90,6 +90,9 @@ To perform the analysis presented in the paper, follow the next steps:
 	  The script "peaksDetection.py" computes and visualizes the peaks in the daily profiles 
 	  of the latent states. These results are shown in Fig 5.
 	  
+	- For comparison of the latent states' profiles to the ones of manually scored sleep stages,
+	  use the scripts in ./groundTruthStageVisualization/
+	  
 	- In case of analysis of data including both baseline and recovery (after sleep deprivation) 
 	  recordings, go to ./lstatesDailyProfiles/baselineVsRecovery/ to compute the homostatic
 	  response of the observed latent states.
@@ -109,6 +112,18 @@ To perform the analysis presented in the paper, follow the next steps:
 	The script "classificationEsnemble.py" produces the results shown in S2 Fig.
     
     To do so, modify & run the "runScripts.sh".
+	
+## Other Scripts
+      
+    - The scripts found in ./groundTruthStageVisualization/ allow for comparison of the latent states
+	  to manually scored sleep stages. Specifically:
+	  
+	  The script "GTStageBoxplots.py" allows for the comparison of the latent states' distributions
+	  (boxplots in Fig 2, Fig 6 and S1 Fig) to the distributions of the manually scored sleep stages
+	  (see S6 Fig, S7 Fig).
+	  
+	  The script "groundTruthStageProfiles.py" allows for the comparison of the latent states' daily profiles
+	  (curves in Fig 4, Fig 6 and S4 Fig) to those of the manually scored sleep stages (see Fig 6 -A, S5 Fig).
     
 ## QUESTIONS
       
