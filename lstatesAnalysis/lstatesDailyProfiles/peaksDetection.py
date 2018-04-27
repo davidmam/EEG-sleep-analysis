@@ -206,7 +206,7 @@ class peaksDetector(object):
 			y = yCurve[6:len(timeList)-6]
 			
 			max_peaks, min_peaks = peakdetect(y, lookahead=1)
-			if len(currObsKeys) > 89:
+			if len(currObsKeys) > 1:
 				mylist = [epochsW, epochsNR, epochsR]
 				if mylist.index(max(mylist)) != 0:# if lstate NREM or REM							
 					if len(max_peaks):
