@@ -115,15 +115,15 @@ To perform the analysis presented in the paper, follow the next steps:
 	
 ## Other Scripts
       
-    - The scripts found in ./groundTruthStageVisualization/ allow for comparison of the latent states
-	  to manually scored sleep stages. Specifically:
+    The scripts found in ./groundTruthStageVisualization/ allow for comparison of the latent states
+	to manually scored sleep stages. Specifically:
 	  
-	  The script "GTStageBoxplots.py" allows for the comparison of the latent states' distributions
-	  (boxplots in Fig 2, Fig 6 and S1 Fig) to the distributions of the manually scored sleep stages
-	  (see S6 Fig, S7 Fig).
+	  - The script "GTStageBoxplots.py" allows for the comparison of the latent states' distributions
+	   (boxplots in Fig 2, Fig 6 and S1 Fig) to the distributions of the manually scored sleep stages
+	   (see S6 Fig, S7 Fig).
 	  
-	  The script "groundTruthStageProfiles.py" allows for the comparison of the latent states' daily profiles
-	  (curves in Fig 4, Fig 6 and S4 Fig) to those of the manually scored sleep stages (see Fig 6 -A, S5 Fig).
+	  - The script "groundTruthStageProfiles.py" allows for the comparison of the latent states' daily profiles
+	   (curves in Fig 4, Fig 6 and S4 Fig) to those of the manually scored sleep stages (see Fig 6 -A, S5 Fig).
     
 ## QUESTIONS
       
