@@ -16,7 +16,7 @@ Istituto Italiano di Tecnognolia (IIT) - (https://pavis.iit.it/).
 V.-M. Katsageorgiou, D. Sona, M. Zanotto, G. Lassi, C. Garcia-Garcia, V. Tucci, V. Murino,  
 "A Novel Unsupervised Analysis of Electrophysiological Signals Reveals New Sleep Sub-stages in Mice"
 
-The given scripts perfom unsupervised analysis of EEG/EMG mouse data employing  
+The given scripts perform unsupervised analysis of EEG/EMG mouse data employing  
 the mean-covariance Restricted Boltzmann Machine (mcRBM) by Marc'Aurelio Ranzato.
 
 Refer to:
@@ -44,7 +44,7 @@ Third-Order Boltzmann Machines", CVPR 2010"
             - PIL.Image
 
             
-## The code has been developed and tested on arch linux.
+## The code has been developed and tested on Arch Linux.
 
 ********************************************************************************
 
@@ -59,6 +59,7 @@ To perform the analysis presented in the paper, follow the next steps:
     - create a folder where the analysis will be stored & copy inside the 
       configuration files that can be found at ./trainModel/configurationFiles/
       Modify the configuration files accordingly
+	  
     - go to ./trainModel/ & run the "run_gpu.sh" script after having modified it
       accordingly
       
@@ -71,21 +72,41 @@ To perform the analysis presented in the paper, follow the next steps:
       analysis steps even before the predefined training epochs have been reached.
       
 ## Step 3: analysis of the inferred latent states
-    - modify accordingly & run the "runScripts.sh"
-      (see in lstatesAnalysis.py for more details regaring the output of the script)
+	- the script "lstatesAnalysis.py" that can be found in ./lstatesAnalysis/ produces
+	  most of the results that have been summarized in the Figures of the paper.
+	  Specifically, it produces the analysis & plots of the following Figures:
+	  Fig 2, Fig 3, Fig 4 - top, boxplots of Fig 6, S1 Fig, S3 Fig.
+	  
+	  To run the analysis, modify accordingly & run the "runScripts.sh" that can be found 
+	  in ./lstatesAnalysis/
+      (see in lstatesAnalysis.py for more details regarding the output of the script)
       
     - go to ./lstatesDailyProfiles/ and run the "runScripts.sh" to get the daily profiles
       of the inferred latent states & to find their peaks.
-	
-	In case of analysis of data including both baseline and recovery (after sleep deprivation) 
-	recordings, go to ./lstatesDailyProfiles/baselineVsRecovery/ to compute the homostatic
-	response of the observed latent states.
+	  
+	  The script "lstatesDailyProfiles.py" computes and visualizes the per latent state
+	  daily profiles, as shown in Figures: Fig 4 - bottom, Fig 6, S4 Fig.
+	  
+	  The script "peaksDetection.py" computes and visualizes the peaks in the daily profiles 
+	  of the latent states. These results are shown in Fig 5.
+	  
+	- In case of analysis of data including both baseline and recovery (after sleep deprivation) 
+	  recordings, go to ./lstatesDailyProfiles/baselineVsRecovery/ to compute the homostatic
+	  response of the observed latent states.
+	  
+	  The script "baselineRecoveryResponsePerStage.py" computes and visualizes the per 
+	  latent state homostatic response, as shown in Fig 7 - C,D,E,F.
+	  
+	  The script "baselineRecoveryResponseMaxAbsDifference.py" computes and visualizes the maximum
+	  absolute response of each latent state, results shown in Fig 7 - A,B.
       
 ## Step 4: mouse strains classification
       
     In case of multi-subject where different mouse strains have been included, you can 
     test whether you can discriminate among mouse groups using the classification approach 
     that has been implemented in the script that ca be found in "./discriminateMouseGroups/".
+	
+	The script "classificationEsnemble.py" produces the results shown in S2 Fig.
     
     To do so, modify & run the "runScripts.sh".
     
