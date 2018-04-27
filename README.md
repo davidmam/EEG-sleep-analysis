@@ -124,6 +124,11 @@ To perform the analysis presented in the paper, follow the next steps:
 	  
 	  - The script "groundTruthStageProfiles.py" allows for the comparison of the latent states' daily profiles
 	   (curves in Fig 4, Fig 6 and S4 Fig) to those of the manually scored sleep stages (see Fig 6 -A, S5 Fig).
+	   
+## Datasets used 
+      
+    The code is also accompanied by the pre-processed data used in the experiments in this study.
+	For more details, see README.md in ./datasetsPaper/.
     
 ## QUESTIONS
       
