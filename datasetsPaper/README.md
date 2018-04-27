@@ -36,6 +36,10 @@ Each dataset consists of 4 data arrays, described below:
 				   - 1 is associated with baseline,
 				   - 2 is associated with recovery (after sleep deprivation)
 		- column 3: the epoch date-time
+	
+	For more information regarding the given datasets, please refer to the paper.
 
-For more information or possible problems, please contact:
-<p>vasiliki.katsageorgiou@gmail.com
+## QUESTIONS
+	For more information or possible problems, please contact:
+	<p>vasiliki.katsageorgiou@gmail.com
+	
