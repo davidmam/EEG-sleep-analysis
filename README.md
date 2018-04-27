@@ -110,3 +110,9 @@ To perform the analysis presented in the paper, follow the next steps:
     
     To do so, modify & run the "runScripts.sh".
     
+## QUESTIONS
+      
+    For questions / possible problems, please contact:
+	vasiliki.katsageorgiou@gmail.com
+
+	
