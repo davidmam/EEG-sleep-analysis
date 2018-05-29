@@ -16,8 +16,10 @@ that the following conditions are met:
     
     * Use of the source code either directly or in binary form to obtain results reported in an academic 
       publication must include an up to date citation of the following article:
-      V.-M. Katsageorgiou, D. Sona, M. Zanotto, G. Lassi, C. Garcia-Garcia, V. Tucci, V. Murino,
-      "A Novel Unsupervised Analysis of Electrophysiological Signals Reveals New Sleep Sub-stages in Mice"
+      
+      Katsageorgiou V-M, Sona D, Zanotto M, Lassi G, Garcia-Garcia C, Tucci V, et al. (2018) 
+      A novel unsupervised analysis of electrophysiological signals reveals new sleep substages in mice. 
+      PLoS Biol 16(5): e2003663. https://doi.org/10.1371/journal.pbio.2003663
       
     * Neither the name of the Istituto Italiano di Tecnologia nor the names of its contributors may be used to 
       endorse or promote products derived from this software without specific prior written permission.
