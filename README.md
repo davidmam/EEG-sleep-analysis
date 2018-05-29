@@ -13,8 +13,8 @@ Istituto Italiano di Tecnognolia (IIT) - (https://pavis.iit.it/).
 
 
 ## PUBLICATION
-Katsageorgiou V-M, Sona D, Zanotto M, Lassi G, Garcia-Garcia C, Tucci V, Murino V. (2018) 
-A novel unsupervised analysis of electrophysiological signals reveals new sleep substages in mice. 
+Katsageorgiou V-M, Sona D, Zanotto M, Lassi G, Garcia-Garcia C, Tucci V, Murino V. (2018)  
+A novel unsupervised analysis of electrophysiological signals reveals new sleep substages in mice.  
 PLoS Biol 16(5): e2003663. https://doi.org/10.1371/journal.pbio.2003663
 
 The given scripts perform unsupervised analysis of EEG/EMG mouse data employing  
