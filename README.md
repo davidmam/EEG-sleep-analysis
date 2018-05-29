@@ -13,8 +13,9 @@ Istituto Italiano di Tecnognolia (IIT) - (https://pavis.iit.it/).
 
 
 ## PUBLICATION
-V.-M. Katsageorgiou, D. Sona, M. Zanotto, G. Lassi, C. Garcia-Garcia, V. Tucci, V. Murino,  
-"A Novel Unsupervised Analysis of Electrophysiological Signals Reveals New Sleep Sub-stages in Mice"
+Katsageorgiou V-M, Sona D, Zanotto M, Lassi G, Garcia-Garcia C, Tucci V, Murino V. (2018) 
+A novel unsupervised analysis of electrophysiological signals reveals new sleep substages in mice. 
+PLoS Biol 16(5): e2003663. https://doi.org/10.1371/journal.pbio.2003663
 
 The given scripts perform unsupervised analysis of EEG/EMG mouse data employing  
 the mean-covariance Restricted Boltzmann Machine (mcRBM) by Marc'Aurelio Ranzato.
