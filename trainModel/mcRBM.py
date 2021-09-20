@@ -1,16 +1,16 @@
 """
-	THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE 
-						FILE AT THE SOURCE DIRECTORY.
-					
-	Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
-	
-	@author : vasiliki.katsageorgiou@gmail.com
-	
-	
-						Publication:
-	A Novel Unsupervised Analysis of Electrophysiological
-		Signals Reveals New Sleep Sub-stages in Mice
-		
+    THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE 
+                        FILE AT THE SOURCE DIRECTORY.
+                    
+    Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
+    
+    @author : vasiliki.katsageorgiou@gmail.com
+    
+    
+                        Publication:
+    A Novel Unsupervised Analysis of Electrophysiological
+        Signals Reveals New Sleep Sub-stages in Mice
+        
 
 *****************************************************************************
 
@@ -36,13 +36,13 @@ import sys
 import numpy as np
 import os
 import cudamat as cmt
-import cPickle
+import _pickle as cPickle
 import matplotlib.pyplot as plt
 import shutil
 
 from numpy.random import RandomState
 from scipy.io import loadmat, savemat
-from ConfigParser import *
+from configparser import *
 from datetime import datetime
 
 import sys
@@ -95,7 +95,7 @@ class mcRBM:
         self.saveDir = self.expsDir + self.expName
         
         if not os.path.exists(self.saveDir):
-			os.makedirs(self.saveDir)
+            os.makedirs(self.saveDir)
         #shutil.copy2(self.expConfigFilename, self.saveDir)
         #shutil.copy2(self.modelConfigFilename, self.saveDir)
 
@@ -126,43 +126,43 @@ class mcRBM:
     
     #-- Data Loading function:
     def loadData(self):
-		'''
-		Function loading the data
-		'''		
-		# Create save folder
-		if not os.path.exists(self.saveDir + '/dataDetails/'):
-			os.makedirs(self.saveDir + '/dataDetails/')
-		
-		# load data file:
-		if self.dataFilename.split('.')[1] == 'npz':
-			dLoad = np.load(self.dataFilename)
-		elif self.dataFilename.split('.') == 'mat':
-			dLoad = loadmat(self.dataFilename)
-		else:
-			print("error! Unrecognized data file")
-		self.d = dLoad['d']
-		self.obsKeys = dLoad['epochsLinked']
-		self.epochTime = dLoad['epochTime']	
-		
-		"""
-		If you want to keep only EEG features, uncomment next line.
-		"""
-		#self.d = self.d[:, :self.d.shape[1]-1]
-			
-		self.d = np.array(self.d, dtype=np.float32)
-		self.obsKeys = np.array(self.obsKeys, dtype=np.float32)
-		print("initial size: ", self.d.shape)
-		#print("FrameIDs : ", self.obsKeys, "of shape : ", self.obsKeys.shape)
-		
-		with open (self.saveDir + '/dataDetails/' + 'initialData.txt','w') as f:
-			f.write("\n Modeling: %s " % self.dataFilename)
-			f.write("\n Dataset size: %s " % str(self.d.shape))
-			f.write("\n Dataset type: %s " % str(self.d.dtype))		
-			f.write("\n \n d_min: %s " % str(np.min(self.d, axis=0)))
-			f.write("\n \n d_max: %s " % str(np.max(self.d, axis=0)))
-			f.write("\n \n d_mean: %s " % str(np.mean(self.d, axis=0)))
-			f.write("\n \n d_std: %s " % str(np.std(self.d, axis=0)))
-			f.close()
+        '''
+        Function loading the data
+        '''        
+        # Create save folder
+        if not os.path.exists(self.saveDir + '/dataDetails/'):
+            os.makedirs(self.saveDir + '/dataDetails/')
+        
+        # load data file:
+        if self.dataFilename.split('.')[1] == 'npz':
+            dLoad = np.load(self.dataFilename)
+        elif self.dataFilename.split('.') == 'mat':
+            dLoad = loadmat(self.dataFilename)
+        else:
+            print("error! Unrecognized data file")
+        self.d = dLoad['d']
+        self.obsKeys = dLoad['epochsLinked']
+        self.epochTime = dLoad['epochTime']    
+        
+        """
+        If you want to keep only EEG features, uncomment next line.
+        """
+        #self.d = self.d[:, :self.d.shape[1]-1]
+            
+        self.d = np.array(self.d, dtype=np.float32)
+        self.obsKeys = np.array(self.obsKeys, dtype=np.float32)
+        print("initial size: ", self.d.shape)
+        #print("FrameIDs : ", self.obsKeys, "of shape : ", self.obsKeys.shape)
+        
+        with open (self.saveDir + '/dataDetails/' + 'initialData.txt','w') as f:
+            f.write("\n Modeling: %s " % self.dataFilename)
+            f.write("\n Dataset size: %s " % str(self.d.shape))
+            f.write("\n Dataset type: %s " % str(self.d.dtype))        
+            f.write("\n \n d_min: %s " % str(np.min(self.d, axis=0)))
+            f.write("\n \n d_max: %s " % str(np.max(self.d, axis=0)))
+            f.write("\n \n d_mean: %s " % str(np.mean(self.d, axis=0)))
+            f.write("\n \n d_std: %s " % str(np.std(self.d, axis=0)))
+            f.close()
             
     # Function taken from original code
     def compute_energy_mcRBM(self, data,normdata,vel,energy,VF,FH,bias_cov,bias_vis,w_mean,bias_mean,t1,t2,t6,feat,featsq,feat_mean,length,lengthsq,normcoeff,small,num_vis):
@@ -345,12 +345,12 @@ class mcRBM:
         '''
         Main train function : modified version of the original train function.
         Additions : GPU selection (useful for multi-GPU machines)
-					Saving the sum of the square of the data for post-processing
-					Visible data are saved
-					Data samples are permuted for training
-					Weights are saved every 100 training epochs
-					Training energy is visualized every 100 training epochs
-		NOTE : anneal learning rate used in the initial code, is NOT used here!
+                    Saving the sum of the square of the data for post-processing
+                    Visible data are saved
+                    Data samples are permuted for training
+                    Weights are saved every 100 training epochs
+                    Training energy is visualized every 100 training epochs
+        NOTE : anneal learning rate used in the initial code, is NOT used here!
         '''
         #plt.ion()
         f1 = plt.figure()
@@ -375,13 +375,13 @@ class mcRBM:
         self.plotsDir = 'plots'
         #self.probabilitiesDir = 'p_all'        
         if not os.path.isdir(self.plotsDir):
-			os.makedirs(self.plotsDir)
+            os.makedirs(self.plotsDir)
         if not os.path.isdir(self.plotsDir + '/energy'):
-			os.makedirs(self.plotsDir + '/energy')
+            os.makedirs(self.plotsDir + '/energy')
         #if not os.path.isdir(self.probabilitiesDir):
-        #	os.makedirs(self.probabilitiesDir)        
+        #    os.makedirs(self.probabilitiesDir)        
         if not os.path.isdir('weights'):
-			os.makedirs('weights')
+            os.makedirs('weights')
         
         d = self.d.astype(np.float32)
         print("visible size: ", d.shape)
@@ -398,15 +398,15 @@ class mcRBM:
         np.savez('visData.npz', data=d, obsKeys=self.obsKeys, epochTime=self.epochTime)
         
         with open ('visData.txt','w') as f:
-			f.write("\n Dataset : %s" %(self.dataFilename))
-			f.write("\n visData size: %s " % str(visData.shape))
-			f.write("\n visData type: %s " % str(visData.dtype))
-			f.write("\n \n visData Range: %s " % str(np.max(visData, axis=0)-np.min(visData, axis=0)))
-			f.write("\n \n visData min: %s " % str(np.min(visData, axis=0)))
-			f.write("\n \n visData max: %s " % str(np.max(visData, axis=0)))
-			f.write("\n \n visData mean: %s " % str(np.mean(visData, axis=0)))
-			f.write("\n \n visData std: %s " % str(np.std(visData, axis=0)))
-			f.close()	
+            f.write("\n Dataset : %s" %(self.dataFilename))
+            f.write("\n visData size: %s " % str(visData.shape))
+            f.write("\n visData type: %s " % str(visData.dtype))
+            f.write("\n \n visData Range: %s " % str(np.max(visData, axis=0)-np.min(visData, axis=0)))
+            f.write("\n \n visData min: %s " % str(np.min(visData, axis=0)))
+            f.write("\n \n visData max: %s " % str(np.max(visData, axis=0)))
+            f.write("\n \n visData mean: %s " % str(np.mean(visData, axis=0)))
+            f.write("\n \n visData std: %s " % str(np.std(visData, axis=0)))
+            f.close()    
             
         del visData #if not needed for computing the latent states
         
@@ -542,7 +542,7 @@ class mcRBM:
         for epoch in range(self.num_epochs):
 
 
-            print "Epoch " + str(epoch)
+            print ("Epoch " + str(epoch))
         
             # anneal learning rates as found in the original code -
             # uncomment if you wish to use annealing!
@@ -564,7 +564,7 @@ class mcRBM:
 
             if epoch <= self.startFH:
                 epsilonFHc = 0 
-            if epoch <= self.startwd:	
+            if epoch <= self.startwd:    
                 weightcost = 0
 
             # commented to avoid computing the energy on test data
@@ -688,9 +688,9 @@ class mcRBM:
                 bias_mean.add_mult(bias_meaninc, -epsilonb_meanc/self.batch_size)
 
             if self.verbose == 1:
-                print "VF: " + '%3.2e' % VF.euclid_norm() + ", DVF: " + '%3.2e' % (VFinc.euclid_norm()*(epsilonVFc/self.batch_size)) + ", FH: " + '%3.2e' % FH.euclid_norm() + ", DFH: " + '%3.2e' % (FHinc.euclid_norm()*(epsilonFHc/self.batch_size)) + ", bias_cov: " + '%3.2e' % bias_cov.euclid_norm() + ", Dbias_cov: " + '%3.2e' % (bias_covinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", bias_vis: " + '%3.2e' % bias_vis.euclid_norm() + ", Dbias_vis: " + '%3.2e' % (bias_visinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", wm: " + '%3.2e' % w_mean.euclid_norm() + ", Dwm: " + '%3.2e' % (w_meaninc.euclid_norm()*(epsilonw_meanc/self.batch_size)) + ", bm: " + '%3.2e' % bias_mean.euclid_norm() + ", Dbm: " + '%3.2e' % (bias_meaninc.euclid_norm()*(epsilonb_meanc/self.batch_size)) + ", step: " + '%3.2e' % hmc_step  +  ", rej: " + '%3.2e' % hmc_ave_rej 
+                print( "VF: " + '%3.2e' % VF.euclid_norm() + ", DVF: " + '%3.2e' % (VFinc.euclid_norm()*(epsilonVFc/self.batch_size)) + ", FH: " + '%3.2e' % FH.euclid_norm() + ", DFH: " + '%3.2e' % (FHinc.euclid_norm()*(epsilonFHc/self.batch_size)) + ", bias_cov: " + '%3.2e' % bias_cov.euclid_norm() + ", Dbias_cov: " + '%3.2e' % (bias_covinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", bias_vis: " + '%3.2e' % bias_vis.euclid_norm() + ", Dbias_vis: " + '%3.2e' % (bias_visinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", wm: " + '%3.2e' % w_mean.euclid_norm() + ", Dwm: " + '%3.2e' % (w_meaninc.euclid_norm()*(epsilonw_meanc/self.batch_size)) + ", bm: " + '%3.2e' % bias_mean.euclid_norm() + ", Dbm: " + '%3.2e' % (bias_meaninc.euclid_norm()*(epsilonb_meanc/self.batch_size)) + ", step: " + '%3.2e' % hmc_step  +  ", rej: " + '%3.2e' % hmc_ave_rej )
                 with open ('terminal.txt','a') as f:
-					f.write('\n' + "epoch: %s" % str(epoch) + ", VF: " + '%3.2e' % VF.euclid_norm() + ", DVF: " + '%3.2e' % (VFinc.euclid_norm()*(epsilonVFc/self.batch_size)) + ", FH: " + '%3.2e' % FH.euclid_norm() + ", DFH: " + '%3.2e' % (FHinc.euclid_norm()*(epsilonFHc/self.batch_size)) + ", bias_cov: " + '%3.2e' % bias_cov.euclid_norm() + ", Dbias_cov: " + '%3.2e' % (bias_covinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", bias_vis: " + '%3.2e' % bias_vis.euclid_norm() + ", Dbias_vis: " + '%3.2e' % (bias_visinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", wm: " + '%3.2e' % w_mean.euclid_norm() + ", Dwm: " + '%3.2e' % (w_meaninc.euclid_norm()*(epsilonw_meanc/self.batch_size)) + ", bm: " + '%3.2e' % bias_mean.euclid_norm() + ", Dbm: " + '%3.2e' % (bias_meaninc.euclid_norm()*(epsilonb_meanc/self.batch_size)) + ", step: " + '%3.2e' % hmc_step  +  ", rej: " + '%3.2e' % hmc_ave_rej )
+                    f.write('\n' + "epoch: %s" % str(epoch) + ", VF: " + '%3.2e' % VF.euclid_norm() + ", DVF: " + '%3.2e' % (VFinc.euclid_norm()*(epsilonVFc/self.batch_size)) + ", FH: " + '%3.2e' % FH.euclid_norm() + ", DFH: " + '%3.2e' % (FHinc.euclid_norm()*(epsilonFHc/self.batch_size)) + ", bias_cov: " + '%3.2e' % bias_cov.euclid_norm() + ", Dbias_cov: " + '%3.2e' % (bias_covinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", bias_vis: " + '%3.2e' % bias_vis.euclid_norm() + ", Dbias_vis: " + '%3.2e' % (bias_visinc.euclid_norm()*(epsilonbc/self.batch_size)) + ", wm: " + '%3.2e' % w_mean.euclid_norm() + ", Dwm: " + '%3.2e' % (w_meaninc.euclid_norm()*(epsilonw_meanc/self.batch_size)) + ", bm: " + '%3.2e' % bias_mean.euclid_norm() + ", Dbm: " + '%3.2e' % (bias_meaninc.euclid_norm()*(epsilonb_meanc/self.batch_size)) + ", step: " + '%3.2e' % hmc_step  +  ", rej: " + '%3.2e' % hmc_ave_rej )
                 sys.stdout.flush()
             
             # commented to avoid computing the energy on trainig data
@@ -713,8 +713,8 @@ class mcRBM:
             ax1.plot(range(epoch), minEnergy[0:epoch])
             
             if np.mod(epoch,100) == 0:
-				#f1.savefig(output_folder + str(epoch)+'_'+'fig.png')
-				f1.savefig(self.plotsDir + '/energy/energyAt_%s.png' %str(epoch))
+                #f1.savefig(output_folder + str(epoch)+'_'+'fig.png')
+                f1.savefig(self.plotsDir + '/energy/energyAt_%s.png' %str(epoch))
                 
             # back-up every once in a while 
             if np.mod(epoch,100) == 0:

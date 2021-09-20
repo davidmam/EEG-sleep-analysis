@@ -1,17 +1,17 @@
 #
 #   THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE 
-#					  FILE AT THE SOURCE DIRECTORY.
-#				
+#                      FILE AT THE SOURCE DIRECTORY.
+#                
 #       Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
-#	
-#           	@author : vasiliki.katsageorgiou@gmail.com
+#    
+#               @author : vasiliki.katsageorgiou@gmail.com
 #
-#	
-#						Publication:
-#	A Novel Unsupervised Analysis of Electrophysiological
-#		Signals Reveals New Sleep Sub-stages in Mice
-#		
-#		
+#    
+#                        Publication:
+#    A Novel Unsupervised Analysis of Electrophysiological
+#        Signals Reveals New Sleep Sub-stages in Mice
+#        
+#        
 #*****************************************************************************
 
 
@@ -22,4 +22,4 @@ refDir='/home/vkatsageorgiou/mouseSleepAnalysis/experiment1/'
 # default: normFlag=0
 normFlag=0
 
-python2 -W ignore classificationEsnemble.py -refDir ${refDir} -normFlag ${normFlag}
+python -W ignore classificationEsnemble.py -refDir ${refDir} -normFlag ${normFlag}

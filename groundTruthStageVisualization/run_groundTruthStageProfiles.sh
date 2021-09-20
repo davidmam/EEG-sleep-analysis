@@ -1,17 +1,17 @@
 #
 #   THIS CODE IS UNDER THE BSD 2-Clause LICENSE. YOU CAN FIND THE COMPLETE 
-#					FILE AT THE SOURCE DIRECTORY.
-#				
+#                    FILE AT THE SOURCE DIRECTORY.
+#                
 #       Copyright (C) 2017 V.-M. Katsageorgiou - All rights reserved
-#	
-#           	@author : vasiliki.katsageorgiou@gmail.com
+#    
+#               @author : vasiliki.katsageorgiou@gmail.com
 #
-#	
-#						Publication:
-#	A Novel Unsupervised Analysis of Electrophysiological
-#		Signals Reveals New Sleep Sub-stages in Mice
-#		
-#		
+#    
+#                        Publication:
+#    A Novel Unsupervised Analysis of Electrophysiological
+#        Signals Reveals New Sleep Sub-stages in Mice
+#        
+#        
 #*****************************************************************************
 
 
@@ -30,7 +30,7 @@ strains="cd1c57mixed"
 
 
 if [ -f "${BASE_DIR}doneDailyProfilesGT" ] 
-	then
-		echo "3: computing the per manually scored sleep stage daily profiles"
-		python2 -W ignore groundTruthStageProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
+    then
+        echo "3: computing the per manually scored sleep stage daily profiles"
+        python -W ignore groundTruthStageProfiles.py -f ${BASE_DIR} -epoch ${epochID} -case ${strains} -deg ${deg}
 fi
