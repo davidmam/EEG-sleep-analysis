@@ -26,7 +26,18 @@ Conda package installs
 Need to install visual C++ from Visual Studio to complile cudamat.
 Need to install CUDA toolkit directly 
 
-Download VS 2019 commnity edition
+Download VS 2017 commnity edition with the C++ build tools
 
-Start VS and open a command prompt 
+
+in cudamat:
+edit setup.py. Add at line 95
+
+`                if c.find(',ID=2') >1:
+                    cmd[idx]=c[:c.index(',ID=2')]+c[c.index(',ID=2')+5:]
+`
+
+Open a command prompt
+run the script `"c:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"`
+
 Navigate to cudamat directory and run `python setup.py install`
+
